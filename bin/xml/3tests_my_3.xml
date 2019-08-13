@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+    <package>
+        <sms id='111111' uniqid='20' part='1' total='1' dst_num='380939224796' time_begin='2016-04-05 20:30:00'>
+            Какой-то длинный текст более чем на 70 символов, и тут должна вернуться ошибка, типа часть длинная слишком
+        </sms>
+        <sms id='111112' uniqid='21' part='1' total='2' dst_num='380939224796' time_begin='2016-04-05 20:30:00'><![CDATA[Lead to the river
+Midsummer, I waved
+A 'V' of black swans
+On with hope to the grave
+All through Red September
+With skies fire-paved
+I begged you appear
+Like a t
+        ]]></sms>
+        <sms id='111113' uniqid='21' part='2' total='2' dst_num='380939224796' time_begin='2016-04-05 20:30:00'><![CDATA[horn for the holy ones
+
+Cold was my soul
+Untold was the pain
+I faced when you left me
+A rose in the rain
+So I swore to thy razor
+That never, enchained
+        ]]></sms>
+        <sms id='111114' uniqid='22' part='1' total='1' dst_num='380939224796' time_begin='2016-04-05 20:30:00'><![CDATA[Какой-то длинный текст ровно на 70 символов, ошибки нет, вообще нет   ]]>
+        </sms>
+    </package>
