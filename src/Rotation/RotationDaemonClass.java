@@ -19,7 +19,11 @@ public class RotationDaemonClass {
         }
         finally { System.out.println(LogsT.printDate() + "demonize started!"); }
 
-        rotation();
+        ArrayList<Integer> allFreePorts = getAllFreePorts();
+        System.out.println(LogsT.printDate() +"allFreePorts:");
+        System.out.println(allFreePorts);
+
+        //rotation();
     }
 
     static private void daemonize() throws Exception{
@@ -55,12 +59,12 @@ public class RotationDaemonClass {
         return freePorts;
     }
 
-    static private void getAllFreePorts(int zone){
-
+    static private void getAllFreePortsZone(int zone){
+        System.out.println(LogsT.printDate() + "|RotationDaemonClass.getAllFreePorts zone");
     }
 
-    static private void getAllFreePorts(int gate){
-
+    static private void getAllFreePortsGate(int gate){
+        System.out.println(LogsT.printDate() + "|RotationDaemonClass.getAllFreePorts gate");
     }
 
     static private ArrayList<Integer> getGoipsForRotation() throws SQLException {
