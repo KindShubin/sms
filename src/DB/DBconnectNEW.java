@@ -13,9 +13,9 @@ public class DBconnectNEW {
 //    private static final String password = "FEwuV32u6una";
 
 // logicPower
-    private static final String url = "jdbc:mysql://10.88.0.1:3306/smssystem?zeroDateTimeBehavior=convertToNull";
+    private static final String url = "jdbc:mysql://localhost:3306/smssystem?zeroDateTimeBehavior=convertToNull";
     private static final String user = "root";
-    private static final String password = "N9DW44dq";
+    private static final String password = "i9D4L3rbHsY3";
 
 
     private static Properties p;
