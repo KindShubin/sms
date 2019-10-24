@@ -7,9 +7,8 @@ import LogsParts.LogsT;
 import Run.ClassRunAsyncSend;
 
 import java.sql.SQLException;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
@@ -164,10 +163,10 @@ public class SendSms {
 
     private static String preparedQueryForWaitSms(int sizeBlock){
         String strReturn = "";
-        boolean check=false;
-        ArrayList<Integer> prior = new ArrayList<>();
+        //boolean check=false;
+        //ArrayList<Integer> prior = new ArrayList<>();
         ArrayList<String> querys = new ArrayList<>();
-        String strQueryDefinePriority = "SELECT prioritet from smssystem.clients where prioritet>0 group by prioritet order by prioritet";
+        /*String strQueryDefinePriority = "SELECT prioritet from smssystem.clients where prioritet>0 group by prioritet order by prioritet";
         try{
             ArrayList<HashMap> res = DBconnectNEW.getResultSet(strQueryDefinePriority);
             for(HashMap hm : res){
@@ -180,17 +179,49 @@ public class SendSms {
             System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms|ERROR SendSms.preparedQueryForSearchSms() -- strQueryDefinePriority");
             e.printStackTrace();
         }
-        //if(check){break;}
-        //}
-        //System.out.println(LogsT.printDate() + "SendSms.preparedQueryForSearchSms("+sizeBlock+") check: "+check);
-        if (!check){return strReturn;}
-        for (int i=0; i<prior.size(); i++){
+        if (!check){return strReturn;}*/
+        Map<Integer,Integer> mapPriorAndQnt = getMapPrioritetAndQntWaitSms();
+        System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| mapPriorAndQnt: " + mapPriorAndQnt.toString());
+        int allSmsInQueue = 0;
+        for (Map.Entry<Integer,Integer> entry : mapPriorAndQnt.entrySet()){
+            allSmsInQueue+=entry.getValue();
+        }
+        System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| allSmsInQueue: " + allSmsInQueue);
+/*        for (int i=0; i<prior.size(); i++){
             String subStr = new StringBuilder().append("select subs.id from (select id from smssystem.smslogs where availability = 'Y' and status = 'WAIT' and time_entry > NOW() - INTERVAL 2 DAY and " +
                     "client_id in (SELECT id FROM smssystem.clients where time(now()) between time_range_start and time_range_end and prioritet=")
                     .append(prior.get(i))
                     .append(") order by id asc limit ").append(sizeBlock).append(") as subs").toString();
             //System.out.println(LogsT.printDate() + "SendSms.preparedQueryForSearchSms("+sizeBlock+") subStr: "+subStr);
             querys.add(subStr);
+        }*/
+        List<Integer> priorListSortAsc = mapPriorAndQnt.keySet().stream().collect(Collectors.toList());
+        Collections.sort(priorListSortAsc);
+        System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| priorListSortAsc: " + priorListSortAsc.toString());
+        Map<Integer,Integer> mapPriorAndPerc = getMapPercentageDistributionForEachPrior(mapPriorAndQnt);
+        System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| mapPriorAndPerc: " + mapPriorAndPerc.toString());
+        int freeSms = 0;
+        for (int prior : priorListSortAsc){
+            //int prioritet = prior;
+            int percent = mapPriorAndPerc.get(prior);
+            System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| percent: " + percent);
+            int sizeBlockSmsForPrior = (int)Math.floor(sizeBlock*percent);
+            System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| sizeBlockSmsForPrior: " + sizeBlockSmsForPrior);
+            String subStr = new StringBuilder().append("select subs.id from (select id from smssystem.smslogs where availability = 'Y' and status = 'WAIT' and time_entry > NOW() - INTERVAL 2 DAY and " +
+                    "client_id in (SELECT id FROM smssystem.clients where time(now()) between time_range_start and time_range_end and prioritet=")
+                    .append(prior)
+                    .append(") order by id asc limit ").append(sizeBlockSmsForPrior+freeSms).append(") as subs").toString();
+            System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| subStr: " + subStr);
+            querys.add(subStr);
+            if (sizeBlockSmsForPrior>mapPriorAndQnt.get(prior)){
+                freeSms=freeSms+sizeBlockSmsForPrior-mapPriorAndQnt.get(prior);
+            } else {
+                freeSms=sizeBlockSmsForPrior+freeSms-mapPriorAndQnt.get(prior);
+                if (freeSms<0){
+                    freeSms=0;
+                }
+            }
+            System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| freeSms: " + freeSms);
         }
         System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms|("+sizeBlock+") begin bind block with union");
         for(String s : querys){
@@ -203,10 +234,57 @@ public class SendSms {
             strReturn = strReturn.substring(0, strReturn.length() - 11);
             strReturn+=" limit "+sizeBlock;
         }
-        //strReturn+=" limit "+sizeBlock;
+        // включить для отладки. показывает большой селект для выборки смс под отправку.
         System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms|("+sizeBlock+") strReturn: "+strReturn);
-        //System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms|("+sizeBlock+") union iterations: "+ querys.size());
         return strReturn;
+    }
+
+    private static Map<Integer,Integer> getMapPrioritetAndQntWaitSms(){
+        String query = "select sc.prioritet, count(1) as qnt from smssystem.smslogs as ss join smssystem.clients as sc on sc.id=ss.client_id where ss.availability = 'Y' and ss.status = 'WAIT' and ss.time_entry > NOW() - INTERVAL 2 DAY group by sc.prioritet order by sc.prioritet asc";
+        Map<Integer,Integer> result = new HashMap<>();
+        try{
+            ArrayList<HashMap> res = DBconnectNEW.getResultSet(query);
+            for(HashMap hm : res){
+                result.put(GetVal.getInt(hm,"prioritet"),GetVal.getInt(hm,"qnt"));
+            }
+        } catch (Exception e){
+            System.out.println(LogsT.printDate() + "|SendSms.getMapPrioritetAndPercentsForWaitSms()| getresult ERROR:");
+            e.printStackTrace();
+        }
+        System.out.println(LogsT.printDate() + "|SendSms.getMapPrioritetAndPercentsForWaitSms()| result:"+result.toString());
+        return result;
+    }
+
+    // На вход получает Мар с данными по выборке приоритет смс - кол-во в базе, например 1-8, 3-30, 6-549 и приоритет для которого надо посчиать процент
+    // Процент вычитывается так: Нименьший вес приоритета=1, следующий по значимости в 2 раза больше и так до 1го приоритета. Сумма весов=100% далее по пропорции для кажого веса.
+    // Нпример, при Мар:1-8, 3-30, 5-124, 6-549 Это будет 6-1 5-2 3-4 1-8. Всего 15весов.
+    // Значит процент для смс с приоритетом 1 будет 100/15*8=53%. Для приоритета 3: 100/15*4=26,6%. Для приоритета 5: 100/15*2=13....
+    private static Map<Integer, Integer> getMapPercentageDistributionForEachPrior(Map<Integer,Integer> map){
+        int maxPrior=1;
+        for(Map.Entry<Integer,Integer> entry : map.entrySet()){
+            if (entry.getKey()> maxPrior) {
+                maxPrior=entry.getKey();
+            }
+        }
+        System.out.println(LogsT.printDate() + "|SendSms.getMapPercentageDistributionForEachPrior()| maxPrior:"+maxPrior);
+        List<Integer> priorList = map.keySet().stream().collect(Collectors.toList());
+        Collections.sort(priorList, Collections.reverseOrder());
+        System.out.println(LogsT.printDate() + "|SendSms.getMapPercentageDistributionForEachPrior()| priorList:"+priorList.toString());
+        Map<Integer,Integer> mapPriorAndWeight = new HashMap<>();
+        int weight = 1;
+        int summWeight = 0;
+        for (int i : priorList){
+            mapPriorAndWeight.put(i,weight);
+            summWeight+=weight;
+            weight=weight*2;
+        }
+        System.out.println(LogsT.printDate() + "|SendSms.getMapPercentageDistributionForEachPrior()| mapPriorAndWeight:"+mapPriorAndWeight.toString());
+        Map<Integer,Integer> mapPriorAndPercDistr = new HashMap<>();
+        for (Map.Entry<Integer,Integer> entry : mapPriorAndWeight.entrySet()){
+            mapPriorAndPercDistr.put(entry.getKey(),(int)Math.floor(100/summWeight*entry.getValue()));
+        }
+        System.out.println(LogsT.printDate() + "|SendSms.getMapPercentageDistributionForEachPrior()| mapPriorAndPercDistr:"+mapPriorAndPercDistr.toString());
+        return mapPriorAndPercDistr;
     }
 
 

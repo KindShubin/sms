@@ -37,7 +37,7 @@ public class Binder {
     private static void binder() throws SQLException, InterruptedException {
         while (true) {
             //String query = "select uniqid from smssystem.smslogs where total>1 and status='ENROUTE' and datediff(now(),time_entry)<2 group by uniqid order by rand() limit 1";
-            String query = "select ss.uniqid from smssystem.smslogs as ss left join smssystem.clients as sc on sc.id=ss.client_id where total>1 and status='ENROUTE' and datediff(now(),time_entry)<2 group by uniqid order by sc.prioritet asc, ss.uniqid asc limit 10";
+            String query = "select ss.uniqid from smssystem.smslogs as ss left join smssystem.clients as sc on sc.id=ss.client_id where total>1 and status='ENROUTE' and datediff(now(),time_entry)<2 group by ss.uniqid, sc.prioritet order by sc.prioritet asc, ss.uniqid asc limit 10";
 //            DBconnectSelect db = new DBconnectSelect(query);
 //            ResultSet rs = db.getRs();
             int qntResults=DBconnectNEW.qntRowsInSelect(query);
