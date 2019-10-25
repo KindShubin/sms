@@ -205,7 +205,7 @@ public class SendSms {
             //int prioritet = prior;
             int percent = mapPriorAndPerc.get(prior);
             System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| percent: " + percent);
-            int sizeBlockSmsForPrior = (int)Math.floor(sizeBlock*percent);
+            int sizeBlockSmsForPrior = (int)Math.floor(sizeBlock*percent/100);
             System.out.println(LogsT.printDate() + "|SendSms.preparedQueryForWaitSms| sizeBlockSmsForPrior: " + sizeBlockSmsForPrior);
             String subStr = new StringBuilder().append("select subs.id from (select id from smssystem.smslogs where availability = 'Y' and status = 'WAIT' and time_entry > NOW() - INTERVAL 2 DAY and " +
                     "client_id in (SELECT id FROM smssystem.clients where time(now()) between time_range_start and time_range_end and prioritet=")
