@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -43,7 +43,7 @@ public class SendSms {
             //String query = preparedQueryForSearchSms(30);
             String query = preparedQueryForWaitSms(15);
             try{
-                AbstractList<HashMap> result = DBconnectNEW.getResultSet(query);
+                AbstractList<HashMap> result = DBconnectVPS.getResultSet(query);
                 for (HashMap rs : result) {
                     long id = GetVal.getLong(rs,"id");
                     System.out.println(LogsT.printDate() + LogsId.id(id) + "id: " + id);
@@ -83,7 +83,7 @@ public class SendSms {
     // на случай запуска отправки сразу после добавления смс в систему, пока не вклюал. Могут быть коллизии
     private static void findReadySmsNotDaemon() throws SQLException{
             String query = "select * from smssystem.smslogs as ss where ss.availability = 'Y' and ss.status = 'WAIT' and time_entry > NOW() - INTERVAL 2 DAY order by id asc";
-            ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+            ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
             for (HashMap rs : result) {
                 long id = GetVal.getLong(rs,"id");
                 System.out.println(LogsT.printDate() + LogsId.id(id) + "id: " + id);
@@ -116,7 +116,7 @@ public class SendSms {
         //System.out.println(LogsT.printDate() + "SendSms.preparedQueryForSearchSms("+sizeBlock+") strQueryDefinePriority: "+strQueryDefinePriority);
         //for(int i=0; i<3; i++){
         try{
-            ArrayList<HashMap> res = DBconnectNEW.getResultSet(strQueryDefinePriority);
+            ArrayList<HashMap> res = DBconnectVPS.getResultSet(strQueryDefinePriority);
             for(HashMap hm : res){
                 prior.add(GetVal.getInt(hm, "prioritet"));
                 perc.add(GetVal.getDouble(hm, "perc"));
@@ -168,7 +168,7 @@ public class SendSms {
         ArrayList<String> querys = new ArrayList<>();
         /*String strQueryDefinePriority = "SELECT prioritet from smssystem.clients where prioritet>0 group by prioritet order by prioritet";
         try{
-            ArrayList<HashMap> res = DBconnectNEW.getResultSet(strQueryDefinePriority);
+            ArrayList<HashMap> res = DBconnectVPS.getResultSet(strQueryDefinePriority);
             for(HashMap hm : res){
                 prior.add(GetVal.getInt(hm, "prioritet"));
             }
@@ -243,7 +243,7 @@ public class SendSms {
         String query = "select sc.prioritet, count(1) as qnt from smssystem.smslogs as ss join smssystem.clients as sc on sc.id=ss.client_id where ss.availability = 'Y' and ss.status = 'WAIT' and ss.time_entry > NOW() - INTERVAL 2 DAY group by sc.prioritet order by sc.prioritet asc";
         Map<Integer,Integer> result = new HashMap<>();
         try{
-            ArrayList<HashMap> res = DBconnectNEW.getResultSet(query);
+            ArrayList<HashMap> res = DBconnectVPS.getResultSet(query);
             for(HashMap hm : res){
                 result.put(GetVal.getInt(hm,"prioritet"),GetVal.getInt(hm,"qnt"));
             }

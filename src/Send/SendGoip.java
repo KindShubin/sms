@@ -1,6 +1,6 @@
 package Send;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import GoipProvider.OurProvider;
 import LogsParts.LogsId;
@@ -51,7 +51,7 @@ public class SendGoip implements iSend{
     @Override
     public void updateStatus(Sms sms) throws SQLException {
         String update = new StringBuilder("update smssystem.smslogs as ss SET ss.status='").append(sms.getStatus()).append("' WHERE id=").append(sms.getId()).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private void sendCorp() throws SQLException {
@@ -154,7 +154,7 @@ public class SendGoip implements iSend{
             System.out.println(LogsT.printDate() + LogsId.id(logId) + "SendGoip.sendAllCorp queryFineSims:" + queryFineSims);
             Simcard simcard = null;
             try {
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(queryFineSims);
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(queryFineSims);
                 long imsi = GetVal.getLong(result.get(0), "imsi");
                 System.out.println(LogsT.printDate() + LogsId.id(logId) + "SendGoip.sendAllCorp IMSI:" + imsi);
                 simcard = new Simcard(imsi);
@@ -307,7 +307,7 @@ public class SendGoip implements iSend{
             System.out.println(LogsT.printDate() + LogsId.id(logId) + "SendGoip.chooseFreeSimcard. query for choose simcard:");
             System.out.println(LogsT.printDate() + LogsId.id(logId) + query);
             try {
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
                 long imsi = GetVal.getLong(result.get(0),"imsi");
                 //long imsi = selectFreeSimcards1.getRs().getLong("imsi");
                 System.out.println(LogsT.printDate() + LogsId.id(logId) + "SendGoip.chooseFreeSimcard. IMSI: " + imsi);
@@ -339,7 +339,7 @@ public class SendGoip implements iSend{
         //DBconnectSelect selectAllFreeSimcards = null;
         int qnt = 0;
         try {
-            AbstractList<HashMap> result = DBconnectNEW.getResultSet(query);
+            AbstractList<HashMap> result = DBconnectVPS.getResultSet(query);
             qnt = GetVal.getInt(result.get(0), "qnt");
             System.out.println(LogsT.printDate() + LogsId.id(logId) + "SendGoip.qntAllFreeSimcard. qnt: " + qnt);
         } catch (SQLException e) {
@@ -359,7 +359,7 @@ public class SendGoip implements iSend{
         try {
             //db.getRs().first();
             //gsmStatus = db.getRs().getString("gsm_status");
-            AbstractList<HashMap> result = DBconnectNEW.getResultSet(query);
+            AbstractList<HashMap> result = DBconnectVPS.getResultSet(query);
             gsmStatus = GetVal.getStr(result.get(0), "gsm_status");
         } catch (Exception e){
             e.printStackTrace();

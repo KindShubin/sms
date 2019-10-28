@@ -1,6 +1,6 @@
 package Client;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -91,7 +91,7 @@ public class Client {
         this.id=id;
         String query_client = new StringBuilder().append("SELECT * FROM smssystem.clients as sc where sc.id=").append(this.id).toString();
         //getInfo(new DBconnectSelect(query_client).makeRS());
-        getInfo(DBconnectNEW.getResultSet(query_client).get(0));
+        getInfo(DBconnectVPS.getResultSet(query_client).get(0));
     }
 
     public Client(HashMap hm){

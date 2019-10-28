@@ -1,6 +1,6 @@
 package BeforeSend;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -29,8 +29,8 @@ public static boolean bonding(long uniqid) throws SQLException {
     System.out.println(LogsT.printDate() + LogsId.id(uniqid) + selectBonding);
 //    DBconnectSelect dbSelectBonding = new DBconnectSelect(selectBonding);
 //    ResultSet rs = dbSelectBonding.getRs();
-    int qntResults = DBconnectNEW.qntRowsInSelect(selectBonding);
-    ArrayList<HashMap> result = DBconnectNEW.getResultSet(selectBonding);
+    int qntResults = DBconnectVPS.qntRowsInSelect(selectBonding);
+    ArrayList<HashMap> result = DBconnectVPS.getResultSet(selectBonding);
     //int qntResults = dbSelectBonding.qntRowsInSelect(rs);
     int qntStatusOk = 0;
     //rs.first();
@@ -56,7 +56,7 @@ public static boolean bonding(long uniqid) throws SQLException {
         //if (rs.getInt("total") != totalFirst){
         if (GetVal.getInt(rs,"total") != totalFirst){
             String wrongTotalValue = new StringBuilder(500).append("update smssystem.smslogs as ss SET ss.status='REJECTED', ss.description='Wrong total value in same uniqid' where ss.uniqid=").append(uniqid).toString();
-            DBconnectNEW.executeQuery(wrongTotalValue);
+            DBconnectVPS.executeQuery(wrongTotalValue);
             checkTotals = false;
             break;
         }
@@ -112,7 +112,7 @@ public static boolean bonding(long uniqid) throws SQLException {
         System.out.println(LogsT.printDate() + LogsId.id(uniqid) + "Insert составную смс: ");
         System.out.println(LogsT.printDate() + LogsId.id(uniqid) + insert);
         try{
-            DBconnectNEW.executeQuery(insert);
+            DBconnectVPS.executeQuery(insert);
             //statusToAccepted(uniqid);
             System.out.println(LogsT.printDate() + LogsId.id(uniqid) + "status parts sms uniqid=" + uniqid + " make ACCEPTED because build bonded sms and insert to db correctly");
             boolRes=true;
@@ -122,7 +122,7 @@ public static boolean bonding(long uniqid) throws SQLException {
             boolRes=false;
         }
 //        String updatePartsSms = new StringBuilder(400).append("update smssystem.smslogs Set availability='N', status = 'ACCEPTED' WHERE uniqid=").append(unigid).toString();
-//        DBconnectNEW.executeQuery(updatePartsSms);
+//        DBconnectVPS.executeQuery(updatePartsSms);
     }
     else {
         System.out.println(LogsT.printDate() + LogsId.id(uniqid) + "time entry most early part of sms is: " + time_sms.getTime());
@@ -154,13 +154,13 @@ public static boolean bonding(long uniqid) throws SQLException {
 
     private static void statusToRejected(long uniqid) throws SQLException {
         String update = new StringBuilder().append("update smssystem.smslogs Set availability='N', status = 'REJECTED', description='not all parts was ENROUTE' WHERE uniqid=").append(uniqid).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         System.out.println(LogsT.printDate() + "status pasts sms uniqid="+uniqid+" make REJECTED because not all parts was ENROUTE");
     }
 
     private static void statusToAccepted(long uniqid) throws SQLException {
         String updatePartsSms = new StringBuilder(400).append("update smssystem.smslogs Set availability='N', status = 'ACCEPTED' WHERE uniqid=").append(uniqid).toString();
-        DBconnectNEW.executeQuery(updatePartsSms);
+        DBconnectVPS.executeQuery(updatePartsSms);
         System.out.println(LogsT.printDate() + "status parts sms uniqid=" + uniqid + " make ACCEPTED because build bonded sms and insert to db correctly");
     }
 

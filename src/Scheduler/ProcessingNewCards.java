@@ -1,6 +1,6 @@
 package Scheduler;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -51,7 +51,7 @@ public class ProcessingNewCards {
         String update = "UPDATE smssystem.my_scheduler as sms join scheduler.sim as ss on sms.sim_id=ss.id Set sms.card_status=11 where sms.card_status=10 and ss.sim_login>0";
         System.out.println(LogsT.printDate() + "|definedSimsOnSlots()| update: "+ update);
         try {
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
             System.out.println(LogsT.printDate() + "|definedSimsOnSlots()| update DONE");
         } catch (SQLException e) {
             check=false;
@@ -67,14 +67,14 @@ public class ProcessingNewCards {
         String selectIdFromMyScheduler = "select sms.id from smssystem.my_scheduler as sms join scheduler.sim as ss on sms.sim_id=ss.id where ss.sim_login=0";
         ArrayList<HashMap> resNameColumns = null;
         try {
-            resNameColumns=DBconnectNEW.getResultSet(selectNameColumns);
+            resNameColumns= DBconnectVPS.getResultSet(selectNameColumns);
         } catch (SQLException e) {
             check = false;
             e.printStackTrace();
         }
         ArrayList<HashMap> resIdFromMyScheduler = null;
         try {
-            resIdFromMyScheduler=DBconnectNEW.getResultSet(selectIdFromMyScheduler);
+            resIdFromMyScheduler= DBconnectVPS.getResultSet(selectIdFromMyScheduler);
         } catch (SQLException e) {
             check = false;
             e.printStackTrace();
@@ -97,7 +97,7 @@ public class ProcessingNewCards {
             String update = new StringBuilder().append("UPDATE smssystem.my_scheduler Set ").append(strSetUpdate).append(" where id=").append(id).toString();
             //System.out.println(LogsT.printDate() + "|definedEmptySlots()| update: " + update);
             try {
-                DBconnectNEW.executeQuery(update);
+                DBconnectVPS.executeQuery(update);
                 System.out.println(LogsT.printDate() + "|definedEmptySlots()| id update" + id + " DONE");
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -122,7 +122,7 @@ public class ProcessingNewCards {
         }
         String select = "SELECT host FROM goip.goip where name="+lineName;
         System.out.println(LogsT.printDate() + "|getIpGoip()| select: " + select);
-        ArrayList<HashMap> res = DBconnectNEW.getResultSet(select);
+        ArrayList<HashMap> res = DBconnectVPS.getResultSet(select);
         ip=GetVal.getStr(res.get(0), "host");
         System.out.println(LogsT.printDate() + "|getIpGoip()| host: " + ip);
         if (ip.length()>5) return ip;
@@ -141,7 +141,7 @@ public class ProcessingNewCards {
         int lineName = 0;
         String select = "select case when sdl.line_name>0 then sdl.line_name else 0 end as line_name from smssystem.my_scheduler as sms left join scheduler.device_line as sdl on sms.line_id=sdl.id where sms.id = "+id;
         System.out.println(LogsT.printDate() + "|getLineName()| select: " + select);
-        ArrayList<HashMap> res = DBconnectNEW.getResultSet(select);
+        ArrayList<HashMap> res = DBconnectVPS.getResultSet(select);
         lineName = GetVal.getInt(res.get(0), "line_name");
         System.out.println(LogsT.printDate()+"|getLineName()| lineName:"+lineName);
         return lineName;
@@ -153,7 +153,7 @@ public class ProcessingNewCards {
         long iccid = 0L;
         String select = "SELECT `iccid`, case when `iccid`>'' and `gsm_status`='LOGIN' and `carrier`>'' then cast(`imsi` as signed) else 0 end as imsi_long FROM goip.goip where name = " + line;
         System.out.println(LogsT.printDate()+"|getIccidAndImsiFromDB| select:"+select);
-        ArrayList<HashMap> res = DBconnectNEW.getResultSet(select);
+        ArrayList<HashMap> res = DBconnectVPS.getResultSet(select);
         iccid = GetVal.getLong(res.get(0), "iccid");
         imsi = GetVal.getLong(res.get(0), "imsi");
         System.out.println(LogsT.printDate()+"|getIccidAndImsiFromDB| iccid: "+iccid+" imsi:"+imsi);

@@ -1,6 +1,6 @@
 package Provider;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -35,7 +35,7 @@ public class Provider {
         this.id=id;
         String query_provider = new StringBuilder().append("SELECT * FROM smssystem.providers as sc where sc.id=").append(this.id).toString();
         //getInfo(new DBconnectSelect(query_provider).makeRS());
-        AbstractList<HashMap> result = DBconnectNEW.getResultSet(query_provider);
+        AbstractList<HashMap> result = DBconnectVPS.getResultSet(query_provider);
         getInfo(result.get(0));
     }
 

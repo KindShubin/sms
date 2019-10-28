@@ -1,7 +1,7 @@
 package Daemons;
 
 import BeforeSend.CheckSymbolsSms;
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 import sms.Sms;
@@ -76,7 +76,7 @@ public class PreparingSms {
                     .append(" and port=").append(port).append(" and id between ").append(idSmsStart).append(" and ").append(idSmsEnd)
                     .toString();
             System.out.println(LogsT.printDate() + "queryRecieved: "+queryRecieved);
-            int qntPreparedSms=DBconnectNEW.qntRowsInSelect(queryRecieved);
+            int qntPreparedSms= DBconnectVPS.qntRowsInSelect(queryRecieved);
             System.out.println(LogsT.printDate() + "QNT SMS FOR PREPARED: " + qntPreparedSms + "!");
             if(qntPreparedSms<1){
                 //System.out.println(LogsT.printDate() + "no select in preparingMessages() -- sleep(1000)");
@@ -84,7 +84,7 @@ public class PreparingSms {
                 sleep(1000);
             }
             else {
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(queryRecieved);
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(queryRecieved);
                 for(HashMap rs : result) {
                     try {
                         long id = GetVal.getLong(rs,"id");
@@ -114,7 +114,7 @@ public class PreparingSms {
         while(true && count<1) {
 //        while(true){
             String queryRecieved = "select id from smssystem.smslogs as ss where ss.availability = 'N' and ss.status = 'recieved' and time_entry>DATE_SUB(now(),INTERVAL 24 hour) and (ss.userfield <> 'update id' or ss.userfield is null)";
-            int qntPreparedSms=DBconnectNEW.qntRowsInSelect(queryRecieved);
+            int qntPreparedSms= DBconnectVPS.qntRowsInSelect(queryRecieved);
             System.out.println(LogsT.printDate() + "QNT SMS FOR PREPARED: " + qntPreparedSms + "!");
             if(qntPreparedSms<1){
             //System.out.println(LogsT.printDate() + "no select in preparingMessages() -- sleep(1000)");
@@ -122,7 +122,7 @@ public class PreparingSms {
             sleep(1000);
             }
             else {
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(queryRecieved);
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(queryRecieved);
                 for(HashMap rs : result) {
                     try {
                         long id = GetVal.getLong(rs,"id");
@@ -148,8 +148,8 @@ public class PreparingSms {
 
     public static boolean checkClientId(Sms sms) throws SQLException {
         String query = new StringBuilder().append("select * from smssystem.clients where id =").append(sms.getClient_id()).toString();
-        ///ResultSet rs = DBconnectNEW.getResultSet(query);
-        if(DBconnectNEW.qntRowsInSelect(query)==0){
+        ///ResultSet rs = DBconnectVPS.getResultSet(query);
+        if(DBconnectVPS.qntRowsInSelect(query)==0){
             incorrectClientIdInMessage(sms);
             sms.updateSmsToDB();
             return false;

@@ -1,7 +1,7 @@
 package Run;
 
 import BeforeSend.Bonding;
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
 
@@ -48,7 +48,7 @@ public class ClassRunAsyncBonding implements Runnable{
         //String update = new StringBuilder().append("update smssystem.smslogs Set availability='N', status = 'bonding' WHERE uniqid=").append(uniqid).toString();
         String update = new StringBuilder().append("update smssystem.smslogs Set availability='N', status = 'bonding' WHERE total>1 and datediff(now(),time_entry)<2 and uniqid=").append(uniqid).toString();
         try {
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,7 +58,7 @@ public class ClassRunAsyncBonding implements Runnable{
     private void setStatusEnroute(){
         String update = new StringBuilder().append("update smssystem.smslogs Set availability='N', status = 'ENROUTE' WHERE total>1 and uniqid=").append(uniqid).toString();
         try {
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         } catch (SQLException e) {
             e.printStackTrace();
         }

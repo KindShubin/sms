@@ -1,6 +1,6 @@
 package Scheduler;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -100,14 +100,14 @@ public class Sim implements Runnable{
                 .append(this.balance_begin).append(", balance_time_begin=now() where sim_name=").append(this.sim_name).toString();
                 System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "strQueryBegin: " + strQueryBegin);
             String strQueryBeginToSimcards="";
-            DBconnectNEW.executeQuery(strQueryBegin);
+            DBconnectVPS.executeQuery(strQueryBegin);
                 System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "setYonairInSimcards()...");
             if (this.attempt >1 && intOstatokSMS(this.package_sms_ussd_begin) == -9999){
                 this.package_sms_begin=0;
                 try{
                     System.out.println(LogsT.printDate()+LogsId.id(IMSI)+" attempt:"+this.attempt+" dayLimitAtNow:"+this.dayLimitAtNow+" package_sms_begin:"+this.package_sms_begin+" --> count_perday=0");
                     String strQuery = new StringBuilder().append("update smssystem.simcards SET count_perday=0 where imsi=").append(this.IMSI).toString();
-                    DBconnectNEW.executeQuery(strQuery);
+                    DBconnectVPS.executeQuery(strQuery);
                 } catch (Exception ea1) {
                     System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL update. attempt:"+this.attempt+" dayLimitAtNow:"+this.dayLimitAtNow+" package_sms_begin:"+this.package_sms_begin+" --> count_perday=0");
                     ea1.printStackTrace();
@@ -183,7 +183,7 @@ public class Sim implements Runnable{
         String strQuery = new StringBuilder().append("SELECT attempt FROM smssystem.my_scheduler where sim_name=").append(this.sim_name).toString();
         int res=0;
         try{
-            ArrayList <HashMap> rs = DBconnectNEW.getResultSet(strQuery);
+            ArrayList <HashMap> rs = DBconnectVPS.getResultSet(strQuery);
             res = GetVal.getInt(rs.get(0),"attempt");
         } catch (Exception ae){ ae.printStackTrace(); }
         return res;
@@ -202,7 +202,7 @@ public class Sim implements Runnable{
                 .append(", count_perhour_other=").append(value).append(" where imsi=").append(this.IMSI).toString();
         System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"setLimitPerDayInSimcards("+value+"): "+strQuery);
         try {
-        DBconnectNEW.executeQuery(strQuery);
+        DBconnectVPS.executeQuery(strQuery);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -214,11 +214,11 @@ public class Sim implements Runnable{
         String update = new StringBuilder().append("update smssystem.checkSims Set description=concat(date,' DATA was: simLine=',COALESCE(simLine,'null'),'; goipLine=',COALESCE(goipLine,'null'),'; balance=',balance), simLine=")
                 .append(this.sim_name).append(", goipLine=").append(this.line_name).append(", date=now(), balance='").append(this.balance_ussd_begin).append("', reason='").append(reason).append("' where imsi=").append(this.IMSI).toString();
         try{
-            DBconnectNEW.executeQuery(insert);
+            DBconnectVPS.executeQuery(insert);
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"SchedulerOld.Sim.checkBadSim() Insert is fail --> update");
             try{
-                DBconnectNEW.executeQuery(update);
+                DBconnectVPS.executeQuery(update);
             } catch (Exception e1){
                 System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"SchedulerOld.Sim.checkBadSim() Update is fail");
                 e1.printStackTrace();
@@ -236,7 +236,7 @@ public class Sim implements Runnable{
                 .append(this.package_sms_last).append(", package_sms_time_last=now() where sim_name=").append(this.sim_name).toString();
         System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"strQueryPackageSmsLast: "+strQueryPackageSmsLast);
         try{
-            DBconnectNEW.executeQuery(strQueryPackageSmsLast);
+            DBconnectVPS.executeQuery(strQueryPackageSmsLast);
         } catch (Exception q){
             q.printStackTrace();
         }
@@ -252,7 +252,7 @@ public class Sim implements Runnable{
                 .append(this.balance_last).append(", balance_time_last=now() where sim_name=").append(this.sim_name).toString();
         System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"strQueryBalanceLast: "+strQueryBalanceLast);
         try{
-            DBconnectNEW.executeQuery(strQueryBalanceLast);
+            DBconnectVPS.executeQuery(strQueryBalanceLast);
         } catch (Exception q){
             q.printStackTrace();
         }
@@ -269,13 +269,13 @@ public class Sim implements Runnable{
         String strQueryNumberMySheduler = new StringBuilder().append("UPDATE smssystem.my_scheduler SET number=").append(this.number).append(", number_time=now() WHERE sim_name=").append(this.sim_name).toString();
         System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"SchedulerOld.Sim.methodeDefineNumber() strQueryNumberMySheduler: "+strQueryNumberMySheduler);
         try{
-            DBconnectNEW.executeQuery(strQueryNumberSimcards);
+            DBconnectVPS.executeQuery(strQueryNumberSimcards);
         } catch (Exception q){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"SchedulerOld.Sim.methodeDefineNumber() Error update strQueryNumberSimcards");
             q.printStackTrace();
         }
         try{
-            DBconnectNEW.executeQuery(strQueryNumberMySheduler);
+            DBconnectVPS.executeQuery(strQueryNumberMySheduler);
         } catch (Exception q){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"SchedulerOld.Sim.methodeDefineNumber() Error update strQueryNumberMyScheduler");
             q.printStackTrace();
@@ -287,7 +287,7 @@ public class Sim implements Runnable{
         System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "SchedulerOld.Sim.setNonairInSimcards() start...");
         String strQuery = new StringBuilder().append("update smssystem.simcards Set onair='N', prefix=0 where imsi=").append(this.IMSI).toString();
         System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "SchedulerOld.Sim.setNonairInSimcards() strQuery: "+strQuery);
-        try{ DBconnectNEW.executeQuery(strQuery); }
+        try{ DBconnectVPS.executeQuery(strQuery); }
         catch (Exception e){
             System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "SchedulerOld.Sim.setNonairInSimcards() Error update");
             e.printStackTrace();
@@ -298,7 +298,7 @@ public class Sim implements Runnable{
         System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "SchedulerOld.Sim.setYonairInSimcards() start...");
         String strQuery = new StringBuilder().append("update smssystem.simcards Set onair='Y', prefix=").append(this.line_name).append(" where imsi=").append(this.IMSI).toString();
         System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "SchedulerOld.Sim.setYonairInSimcards() strQuery: " + strQuery);
-        try{ DBconnectNEW.executeQuery(strQuery); }
+        try{ DBconnectVPS.executeQuery(strQuery); }
         catch (Exception e){
             System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "SchedulerOld.Sim.setYonairInSimcards() Error update");
             e.printStackTrace();
@@ -308,14 +308,14 @@ public class Sim implements Runnable{
     private int getLimitPerDayAtNow() throws SQLException {
         int res;
         String strQuery = new StringBuilder().append("select count_perday from smssystem.simcards where imsi=").append(this.IMSI).toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(strQuery);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(strQuery);
         res=GetVal.getInt(result.get(0),"count_perday");
         return res;
     }
 
     private void getLimitPerDayInPools() throws SQLException {
         String strQuery = new StringBuilder().append("select limit_day from smssystem.pools where corp=(select corp from smssystem.simcards where imsi=").append(this.IMSI).append(")").toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(strQuery);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(strQuery);
         this.dailyLimit=GetVal.getInt(result.get(0),"limit_day");
     }
 
@@ -456,7 +456,7 @@ public class Sim implements Runnable{
 
     private void getOperator() throws SQLException {
         String query = new StringBuilder(100).append("SELECT oper FROM scheduler.device_line where line_name=").append(this.line_name).toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
         this.operator = GetVal.getStr(result.get(0), "oper");
         System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"now operator:"+this.operator);
         //return this.operator;
@@ -576,7 +576,7 @@ public class Sim implements Runnable{
     private int getSimForImsi() throws SQLException {
         int sim=0;
         String strQuery=new StringBuilder(100).append("SELECT sim_name FROM scheduler.sim where imsi regexp ").append(this.IMSI).toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(strQuery);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(strQuery);
         try{
             sim = GetVal.getInt(result.get(0),"sim_name");
         } catch (Exception e){
@@ -644,7 +644,7 @@ public class Sim implements Runnable{
         //boolean res = false;
         for(int i=0; i<18; i++){
             String strQuery=new StringBuilder().append("SELECT line_name FROM scheduler.sim where sim_name=").append(this.sim_name).toString();
-            ArrayList<HashMap> result = DBconnectNEW.getResultSet(strQuery);
+            ArrayList<HashMap> result = DBconnectVPS.getResultSet(strQuery);
             int line = GetVal.getInt(result.get(0),"line_name");
             if (this.line_name == line){
                 if(checkOperator()){
@@ -662,7 +662,7 @@ public class Sim implements Runnable{
     private void setNincheck_action(){
         String strQuery=new StringBuilder(100).append("UPDATE smssystem.my_scheduler SET check_action='N' where sim_name=").append(this.sim_name).toString();
         try {
-            DBconnectNEW.executeQuery(strQuery);
+            DBconnectVPS.executeQuery(strQuery);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -671,7 +671,7 @@ public class Sim implements Runnable{
     private void setTimeDefineOperator(){
         try{
             String strQuery = new StringBuilder().append("update smssystem.my_scheduler Set time_define_oper=now() where sim_name=").append(this.sim_name).toString();
-            DBconnectNEW.executeQuery(strQuery);
+            DBconnectVPS.executeQuery(strQuery);
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL setTimeDefineOperator");
             e.printStackTrace();
@@ -681,7 +681,7 @@ public class Sim implements Runnable{
     private void setTimeBeginWork(){
         try{
             String strQuery = new StringBuilder().append("update smssystem.my_scheduler Set time_begin_work=now() where sim_name=").append(this.sim_name).toString();
-            DBconnectNEW.executeQuery(strQuery);
+            DBconnectVPS.executeQuery(strQuery);
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL setTimeBeginWork");
             e.printStackTrace();
@@ -691,7 +691,7 @@ public class Sim implements Runnable{
     private void setTimeBeginPause(){
         try{
             String strQuery = new StringBuilder().append("update smssystem.my_scheduler Set time_begin_pause=now() where sim_name=").append(this.sim_name).toString();
-            DBconnectNEW.executeQuery(strQuery);
+            DBconnectVPS.executeQuery(strQuery);
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL setTimeBeginPause");
             e.printStackTrace();
@@ -701,7 +701,7 @@ public class Sim implements Runnable{
     private void setTimeEndPause(){
         try{
             String strQuery = new StringBuilder().append("update smssystem.my_scheduler Set time_end_pause=now() where sim_name=").append(this.sim_name).toString();
-            DBconnectNEW.executeQuery(strQuery);
+            DBconnectVPS.executeQuery(strQuery);
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL setTimeEndPause");
             e.printStackTrace();
@@ -711,7 +711,7 @@ public class Sim implements Runnable{
     private void setTimeEndWork(){
         try{
             String strQuery = new StringBuilder().append("update smssystem.my_scheduler Set time_end_work=now() where sim_name=").append(this.sim_name).toString();
-            DBconnectNEW.executeQuery(strQuery);
+            DBconnectVPS.executeQuery(strQuery);
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL setTimeEndWork");
             e.printStackTrace();
@@ -767,7 +767,7 @@ public class Sim implements Runnable{
         try {
             String strQuery = new StringBuilder().append("select num from smssystem.auto_prozvon where operator='").append(this.operator).append("' order by rand() limit 1").toString();
             System.out.println(LogsT.printDate() + LogsId.id(IMSI) + "findNumForCall().strQuery: " + strQuery);
-            ArrayList<HashMap> result = DBconnectNEW.getResultSet(strQuery);
+            ArrayList<HashMap> result = DBconnectVPS.getResultSet(strQuery);
             num=GetVal.getInt(result.get(0),"num");
         } catch (Exception e){
             System.out.println(LogsT.printDate()+LogsId.id(IMSI)+"FAIL findNumForCall()");

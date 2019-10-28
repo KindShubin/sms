@@ -1,6 +1,6 @@
 package Sims;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -133,7 +133,7 @@ public class Simcard {
 
     public Simcard(long imsi) throws SQLException {
         String query = new StringBuilder(200).append("select * from smssystem.simcards where imsi=").append(imsi).toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
         getinfo(result.get(0));
 
     }
@@ -293,7 +293,7 @@ public class Simcard {
         System.out.println(LogsT.printDate() + "query getTimeout: " + getTimeout);
         //DBconnectSelect db = new DBconnectSelect(getTimeout);
         //db.getRs().first();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(getTimeout);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(getTimeout);
         int timeoutCheck = 0;
         try {
             timeoutCheck = GetVal.getInt(result.get(0), "timeout");
@@ -313,7 +313,7 @@ public class Simcard {
         System.out.println(LogsT.printDate() + LogsId.id(idSms) + "query getTimeout: " + getTimeout);
         //DBconnectSelect db = new DBconnectSelect(getTimeout);
         //db.getRs().first();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(getTimeout);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(getTimeout);
         int timeoutCheck = 0;
         try {
             timeoutCheck = GetVal.getInt(result.get(0), "timeout");
@@ -342,7 +342,7 @@ public class Simcard {
         System.out.println(LogsT.printDate() + LogsId.id(idSms) + "query: "+setUnavailableSimcard);
         try{
             //db.getStmt().execute(setUnavailableSimcard);
-            DBconnectNEW.executeQuery(setUnavailableSimcard);
+            DBconnectVPS.executeQuery(setUnavailableSimcard);
         } catch (Exception e) {e.toString();}
         //db.closeConnection();
         System.out.println(LogsT.printDate() + LogsId.id(idSms) + "close disableSimcardBeforeSend for imsi:"+simcard.imsi+" corp:+"+simcard.corp+" prefix:"+simcard.prefix);
@@ -357,7 +357,7 @@ public class Simcard {
         System.out.println(LogsT.printDate() + "query: " + setAvailableSimcard);
         try {
             //db.getStmt().execute(setAvailableSimcard);
-            DBconnectNEW.executeQuery(setAvailableSimcard);
+            DBconnectVPS.executeQuery(setAvailableSimcard);
         } catch (Exception e) {e.toString();}
         //db.closeConnection();
         System.out.println(LogsT.printDate() + "close enableSimcardAfterSend for imsi:"+imsi);
@@ -372,7 +372,7 @@ public class Simcard {
                 .append(getImsi()).toString();//off simcard on timeout peiod
         System.out.println(LogsT.printDate() + LogsId.id(id) + "query: "+setUnavailableSimcard);
         try{
-            DBconnectNEW.executeQuery(setUnavailableSimcard);
+            DBconnectVPS.executeQuery(setUnavailableSimcard);
         } catch (Exception e) {e.toString();}
         System.out.println(LogsT.printDate() + LogsId.id(id) + "close disableSimcardBeforeSend for imsi:"+getImsi()+" corp:+"+getCorp()+" prefix:"+getPrefix());
     }
@@ -484,7 +484,7 @@ public class Simcard {
         //dbu.getStmt().execute(update);
         //dbu.closeConnection();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         } catch (Exception e){
             System.out.println(LogsT.printDate() + "error update simcard: "+ e.toString());
         }
@@ -500,7 +500,7 @@ public class Simcard {
                 .append(report_d_hour).append("', report_d_day='")
                 .append(report_d_day).append("' WHERE imsi='")
                 .append(imsi).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //dbu.getStmt().execute(update);
         //dbu.closeConnection();
     }

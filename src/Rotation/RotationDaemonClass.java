@@ -1,7 +1,6 @@
 package Rotation;
 
-import DB.DBconnect;
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -48,7 +47,7 @@ public class RotationDaemonClass {
                 .append("where gg.name regexp '").append(strRegexpGoips).append("' and gg.gsm_status='LOGOUT' and (ss.line_name is NULL or ss1.plan_line_name is NULL);")
                 .toString();
         //System.out.println(LogsT.printDate() + );
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(select);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(select);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "|RotationDaemonClass.getAllFreePorts| result 0");
         } else System.out.println(LogsT.printDate() + "|RotationDaemonClass.getAllFreePorts| qnt ports: "+ result.size());
@@ -69,7 +68,7 @@ public class RotationDaemonClass {
 
     static private ArrayList<Integer> getGoipsForRotation() throws SQLException {
         String select="SELECT goip FROM rotation.goips";
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(select);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(select);
         ArrayList<Integer> goips = new ArrayList<Integer>();
         for (HashMap rs: result) {
             goips.add(GetVal.getInt(rs,"goip"));

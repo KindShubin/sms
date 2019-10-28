@@ -1,6 +1,6 @@
 package sms;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import Exceptions.MyNullPointerEx;
 import LogsParts.LogsId;
@@ -172,7 +172,7 @@ public class Sms {
         String query = new StringBuilder(200).append("SELECT * FROM smssystem.smslogs where id = ").append(id).toString();
         //DBconnectSelect dBconnectSelect = new DBconnectSelect(query);
         //this.rs = dBconnectSelect.getRs();
-        this.result = DBconnectNEW.getResultSet(query);
+        this.result = DBconnectVPS.getResultSet(query);
         System.out.println(LogsT.printDate() + LogsId.id(id) + "получил данные смс и закрываю соединение -- getInfo()");
         //getInfo(this.rs);
         getInfo(result.get(0));
@@ -303,12 +303,12 @@ public class Sms {
                 .append("\" where ss.id=").append(id)
                 .toString();
         System.out.println(LogsT.printDate() + LogsId.id(id) + "updateSms string: "+updateStr);
-        DBconnectNEW.executeQuery(updateStr);
+        DBconnectVPS.executeQuery(updateStr);
         //update.getStmt().execute(updateStr);
         //executeResultSet();
         String query = new StringBuilder(200).append("SELECT * FROM smssystem.smslogs where id = ").append(id).toString();
         //DBconnectSelect dBconnectSelect = new DBconnectSelect(query);
-        this.result=DBconnectNEW.getResultSet(query);
+        this.result= DBconnectVPS.getResultSet(query);
         //this.rs = dBconnectSelect.getRs();
         System.out.println(LogsT.printDate() + LogsId.id(id) + "повторно получил данные смс и закрываю соединение");
         //dBconnectSelect.closeConnectionWithRs();
@@ -322,7 +322,7 @@ public class Sms {
     public void delProvider() throws SQLException {
         this.setProvider_id(0);
         String query = new StringBuilder().append("update smssystem.smslogs Set provider_id=NULL where id=").append(this.id).toString();
-        DBconnectNEW.executeQuery(query);
+        DBconnectVPS.executeQuery(query);
         System.out.println(LogsT.printDate() + LogsId.id(this.id) + "provider_id --> NULL");
     }
 
@@ -330,7 +330,7 @@ public class Sms {
         //System.out.println(LogsT.printDate() + LogsId.id(id) + "!!! Sms.statusSending() curent thread is " + Thread.currentThread().getName());
         this.setStatus("sending");
         String query = new StringBuilder().append("update smssystem.smslogs Set status='sending' where id=").append(id).toString();
-        DBconnectNEW.executeQuery(query);
+        DBconnectVPS.executeQuery(query);
         System.out.println(LogsT.printDate() + LogsId.id(this.id) + "status --> sending");
     }
 
@@ -338,7 +338,7 @@ public class Sms {
         //System.out.println(LogsT.printDate() + LogsId.id(id) + "!!! Sms.statusProcessing() curent thread is " + Thread.currentThread().getName());
         this.setStatus("processing");
         String query = new StringBuilder().append("update smssystem.smslogs Set status='processing' where id=").append(id).toString();
-        DBconnectNEW.executeQuery(query);
+        DBconnectVPS.executeQuery(query);
         System.out.println(LogsT.printDate() + LogsId.id(this.id) + "status --> processing");
     }
 
@@ -346,7 +346,7 @@ public class Sms {
         //System.out.println(LogsT.printDate() + LogsId.id(id) + "!!! Sms.statusWait() curent thread is " + Thread.currentThread().getName());
         this.setStatus("WAIT");
         String query = new StringBuilder().append("update smssystem.smslogs Set status='WAIT' where id=").append(this.id).toString();
-        DBconnectNEW.executeQuery(query);
+        DBconnectVPS.executeQuery(query);
         System.out.println(LogsT.printDate() + LogsId.id(this.id) + "status --> WAIT");
     }
 
@@ -354,7 +354,7 @@ public class Sms {
         //System.out.println(LogsT.printDate() + LogsId.id(id) + "!!! Sms.statusUnknown() curent thread is " + Thread.currentThread().getName());
         this.setStatus("UNKNOWN");
         String query = new StringBuilder().append("update smssystem.smslogs Set status='UNKNOWN', description='maybe wrong dst number' where id=").append(this.id).toString();
-        DBconnectNEW.executeQuery(query);
+        DBconnectVPS.executeQuery(query);
         System.out.println(LogsT.printDate() + LogsId.id(this.id) + "status --> UNKNOWN");
     }
 }

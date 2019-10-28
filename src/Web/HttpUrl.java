@@ -41,7 +41,7 @@ public class HttpUrl {
                 .append("select gg.id from goip.goip as gg join smssystem.simcards as ss on gg.name=")
                 .append(this.simcard.getPrefix())
                 .toString();
-        AbstractList<HashMap> result = DBconnectNEW.getResultSet(querySimcardGoip);
+        AbstractList<HashMap> result = DBconnectVPS.getResultSet(querySimcardGoip);
         try {
             this.idSimcard = GetVal.getInt(result.get(0), "id");
             //this.prefix = GetVal.getInt(result.get(0), "name");
@@ -161,10 +161,10 @@ public class HttpUrl {
         //insertIntoGoipMessage.getStmt().execute(insertGoipMessage);
         //insertIntoGoipMessage.executeQuery("SELECT LAST_INSERT_ID()");
         //db.getStmt().execute(insertGoipMessage);
-        DBconnectNEW.executeQuery(insertGoipMessage);
-        //ArrayList<HashMap> resultID = DBconnectNEW.getResultSet("SELECT LAST_INSERT_ID() as lastid");
+        DBconnectVPS.executeQuery(insertGoipMessage);
+        //ArrayList<HashMap> resultID = DBconnectVPS.getResultSet("SELECT LAST_INSERT_ID() as lastid");
         String strLastId = new StringBuilder().append("select id from goip.message where smsSystemId=").append(sms.getId()).append(" order by id desc").toString();
-        ArrayList<HashMap> resultID = DBconnectNEW.getResultSet(strLastId);
+        ArrayList<HashMap> resultID = DBconnectVPS.getResultSet(strLastId);
         //db.executeQuery("SELECT LAST_INSERT_ID()");
         int idSms = GetVal.getInt(resultID.get(0),"id");
         String insertGoipSends = new StringBuilder(300)
@@ -180,7 +180,7 @@ public class HttpUrl {
 //        DBconnect insertIntoGoipSends = new DBconnect();
 //        insertIntoGoipSends.getStmt().execute(insertGoipSends);
         //db.getStmt().execute(insertGoipSends);
-        DBconnectNEW.executeQuery(insertGoipSends);
+        DBconnectVPS.executeQuery(insertGoipSends);
         String updateGoipIdSmsToSMSLOGSid = new StringBuilder().append("update smssystem.smslogs Set goip_id_sms=(select id from goip.sends where messageid=")
                 .append(idSms).append(" order by id desc limit 1) where id=").append(sms.getId()).toString();
         String updateGoipIdSmsToSMSLOGSuniqid = new StringBuilder().append("update smssystem.smslogs Set goip_id_sms=(select id from goip.sends where messageid=")
@@ -190,13 +190,13 @@ public class HttpUrl {
             System.out.println(LogsT.printDate() + LogsId.id(this.logId) + "Sms is bonding --> updateGoipIdSmsToSMSLOGSuniqid:");
             System.out.println(LogsT.printDate() + LogsId.id(this.logId) + updateGoipIdSmsToSMSLOGSuniqid);
             //db.getStmt().execute(updateGoipIdSmsToSMSLOGSuniqid);
-            DBconnectNEW.executeQuery(updateGoipIdSmsToSMSLOGSuniqid);
+            DBconnectVPS.executeQuery(updateGoipIdSmsToSMSLOGSuniqid);
         }
         else {
             System.out.println(LogsT.printDate() + LogsId.id(this.logId) + "qnt Sms = 1 --> updateGoipIdSmsToSMSLOGSid:");
             System.out.println(LogsT.printDate() + LogsId.id(this.logId) + updateGoipIdSmsToSMSLOGSid);
             //db.getStmt().execute(updateGoipIdSmsToSMSLOGSid);
-            DBconnectNEW.executeQuery(updateGoipIdSmsToSMSLOGSid);
+            DBconnectVPS.executeQuery(updateGoipIdSmsToSMSLOGSid);
         }
         //db.getRs().beforeFirst();
         String urlBase = "https://dima:19910107@localhost/goip/en/resend.php";
@@ -254,11 +254,11 @@ public class HttpUrl {
         String updateSendDateSMSLOGSuniqid = new StringBuilder().append("update smssystem.smslogs Set time_send=NOW() where uniqid=").append(sms.getUniqid()).toString();
         if (sms.getQntsms()>1){
             System.out.println(LogsT.printDate() + LogsId.id(this.logId) + "updateSendDateSMSLOGSuniqid: " + updateSendDateSMSLOGSuniqid);
-            DBconnectNEW.executeQuery(updateSendDateSMSLOGSuniqid);
+            DBconnectVPS.executeQuery(updateSendDateSMSLOGSuniqid);
         }
         else {
             System.out.println(LogsT.printDate() + LogsId.id(this.logId) + "updateSendDateSMSLOGS: " + updateSendDateSMSLOGS);
-            DBconnectNEW.executeQuery(updateSendDateSMSLOGS);
+            DBconnectVPS.executeQuery(updateSendDateSMSLOGS);
         }
 //        // добавление информации в базу smsImsi: idSMS--imsi
 //        String insertSmsImsi=new StringBuilder(300).append("insert smssystem.smsImsi(idSms, imsi) values(")
@@ -292,7 +292,7 @@ public class HttpUrl {
                 .append(" where ss.imsi=").append(simcard.getImsi()).toString();
         System.out.println(LogsT.printDate() + LogsId.id(logId) + "String minuser counter:");
         System.out.println(LogsT.printDate() + LogsId.id(logId) + singleSms);
-        DBconnectNEW.executeQuery(singleSms);
+        DBconnectVPS.executeQuery(singleSms);
     }
 
     private void insertSimcardReportStatistics(Sms sms, long imsi, int prefix) throws SQLException {
@@ -319,15 +319,15 @@ public class HttpUrl {
         System.out.println(LogsT.printDate() + LogsId.id(logId) + "strUpdateToSimcardStatistics: " + strUpdateToSimcardStatistics);
         try {
             //dbu.getStmt().execute(strInsertToSimcardStatistics);
-            DBconnectNEW.executeQuery(strInsertToSimcardStatistics);
+            DBconnectVPS.executeQuery(strInsertToSimcardStatistics);
             System.out.println(LogsT.printDate() + LogsId.id(logId) + "");
         }
         catch (Exception e){
             e.toString();
-            try{ DBconnectNEW.executeQuery(strUpdateToSimcardStatistics); } catch (Exception e1){ System.out.println(e1); }
+            try{ DBconnectVPS.executeQuery(strUpdateToSimcardStatistics); } catch (Exception e1){ System.out.println(e1); }
         }
 //        try {
-//            DBconnectNEW.executeQuery(strUpdateToSimcardStatistics);
+//            DBconnectVPS.executeQuery(strUpdateToSimcardStatistics);
 //        }
 //        catch (Exception e){ e.toString(); }
     }

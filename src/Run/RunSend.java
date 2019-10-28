@@ -1,7 +1,7 @@
 package Run;
 
 import DB.DBconnect;
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
 import Send.Send;
@@ -46,7 +46,7 @@ public class RunSend {
         System.out.println(LogsT.printDate() + LogsId.id(id) + "!!! RunSend.setUnknownStatusSms(id) curent thread is "+Thread.currentThread().getName());
         String query = new StringBuilder().append("update smssystem.smslogs Set status='UNKNOWN', description='maybe wrong dst number' where id=")
                 .append(id).toString();
-        DBconnectNEW.executeQuery(query);
+        DBconnectVPS.executeQuery(query);
     }
 
 // убрал 27,08,2016 из-за массового перевода смс в статус sending и неотрпаки в дальнейшем смс

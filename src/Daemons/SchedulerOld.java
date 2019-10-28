@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -79,7 +79,7 @@ public class SchedulerOld {
                     .append(SCHEDULER_GROUPS).append(")").toString();
             //System.out.println("queryNewSim: "+queryNewSim);
             boolean checkNewSimcard=false;
-            ArrayList<HashMap> resultInsert = DBconnectNEW.getResultSet(queryNewSim);
+            ArrayList<HashMap> resultInsert = DBconnectVPS.getResultSet(queryNewSim);
             for (HashMap rs : resultInsert) {
                 long imsi = GetVal.getLong(rs, "imsi");
                 int sim_name = GetVal.getInt(rs, "sim_name");
@@ -89,7 +89,7 @@ public class SchedulerOld {
                 String strInsertSimInMyScheduler = new StringBuilder().append("insert into smssystem.my_scheduler(sim_name) values (").append(sim_name).append(")").toString();
                 System.out.println(LogsT.printDate() + "strInsertSimInMyScheduler: " + strInsertSimInMyScheduler);
                 try {
-                    DBconnectNEW.executeQuery(strInsertSimInMyScheduler);
+                    DBconnectVPS.executeQuery(strInsertSimInMyScheduler);
                 } catch (Exception e) {
                     System.out.println(LogsT.printDate() + "Fail insert to smssystem.my_scheduler. Maybe imsi is not new");
                     e.printStackTrace();
@@ -98,7 +98,7 @@ public class SchedulerOld {
                 System.out.println(LogsT.printDate() + "strInsertSimInSimcards: " + strInsertSimInSimcards);
                 System.out.println(LogsT.printDate() + "checkNewSimcard: "+checkNewSimcard);
                 try {
-                    DBconnectNEW.executeQuery(strInsertSimInSimcards);
+                    DBconnectVPS.executeQuery(strInsertSimInSimcards);
                     checkNewSimcard=true;
                 } catch (Exception e1) {
                     System.out.println(LogsT.printDate() + "Fail insert to smssystem.simcards. Maybe imsi is not new");
@@ -131,7 +131,7 @@ public class SchedulerOld {
                     "where ss.imsi!='' and ss.line_name>0 and sms.check_action='N' and sst.sim_team_name in (")
                     .append(SCHEDULER_GROUPS).append(")").toString();
             //System.out.println("queryUpdateSim: "+queryUpdateSim);
-            ArrayList<HashMap> resultUpdate = DBconnectNEW.getResultSet(queryUpdateSim);
+            ArrayList<HashMap> resultUpdate = DBconnectVPS.getResultSet(queryUpdateSim);
             for (HashMap rs : resultUpdate) {
                 int sim_name = GetVal.getInt(rs, "sim_name");
                 long imsi = GetVal.getLong(rs, "imsi");
@@ -158,21 +158,21 @@ public class SchedulerOld {
                         .append("SchedulerOld.myScheduler() update sim " + LogsT.printDate()).append("' where imsi=").append(imsi).toString();
                 System.out.println(LogsT.printDate() + "strUpdateSimInMyScheduler: " + strUpdateSimInMyScheduler);
                 try {
-                    DBconnectNEW.executeQuery(strDeleteInfoSimInMyScheduler);
+                    DBconnectVPS.executeQuery(strDeleteInfoSimInMyScheduler);
                 } catch (Exception e1){
-                    System.out.println(LogsT.printDate()+LogsId.id(imsi)+"Fail SchedulerOld.myScheduler() DBconnectNEW.executeQuery(strDeleteInfoSimInMyScheduler)");
+                    System.out.println(LogsT.printDate()+LogsId.id(imsi)+"Fail SchedulerOld.myScheduler() DBconnectVPS.executeQuery(strDeleteInfoSimInMyScheduler)");
                     e1.printStackTrace();
                 }
                 try {
-                    DBconnectNEW.executeQuery(strUpdateSimInMyScheduler);
+                    DBconnectVPS.executeQuery(strUpdateSimInMyScheduler);
                 } catch (Exception e2){
-                    System.out.println(LogsT.printDate()+LogsId.id(imsi)+"Fail SchedulerOld.myScheduler() DBconnectNEW.executeQuery(strUpdateSimInMyScheduler)");
+                    System.out.println(LogsT.printDate()+LogsId.id(imsi)+"Fail SchedulerOld.myScheduler() DBconnectVPS.executeQuery(strUpdateSimInMyScheduler)");
                     e2.printStackTrace();
                 }
                 try {
-                    DBconnectNEW.executeQuery(strUpdateSimInSimcards);
+                    DBconnectVPS.executeQuery(strUpdateSimInSimcards);
                 } catch (Exception e3){
-                    System.out.println(LogsT.printDate()+LogsId.id(imsi)+"Fail SchedulerOld.myScheduler() DBconnectNEW.executeQuery(strUpdateSimInSimcards);");
+                    System.out.println(LogsT.printDate()+LogsId.id(imsi)+"Fail SchedulerOld.myScheduler() DBconnectVPS.executeQuery(strUpdateSimInSimcards);");
                     e3.printStackTrace();
                 }
                 try {
@@ -228,7 +228,7 @@ public class SchedulerOld {
     private static void nullCheckActionInMyScheduler(){
         String query = "update smssystem.my_scheduler Set check_action='N'";
         try{
-            DBconnectNEW.executeQuery(query);
+            DBconnectVPS.executeQuery(query);
             System.out.println(LogsT.printDate() + "OK. SchedulerOld.nullCheckActionInMyScheduler() done. Start rotation sims...");
         } catch (Exception e){
             System.out.println(LogsT.printDate()+"FAIL. SchedulerOld.nullCheckActionInMyScheduler()");
@@ -239,7 +239,7 @@ public class SchedulerOld {
     private static void nullOnairInSimcards(){
         String query = new StringBuilder().append("update smssystem.simcards Set onair='N' where corp in (").append(SIMCARDS_GROUPS).append(")").toString();
         try{
-            DBconnectNEW.executeQuery(query);
+            DBconnectVPS.executeQuery(query);
             System.out.println(LogsT.printDate() + "OK. SchedulerOld.nullOnairInSimcards() done. Start rotation sims...");
         } catch (Exception e){
             System.out.println(LogsT.printDate()+"FAIL. SchedulerOld.nullOnairInSimcards()");

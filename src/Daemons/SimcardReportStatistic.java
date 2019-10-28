@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -55,7 +55,7 @@ public class SimcardReportStatistic {
                     .append("(select ss.id from smssystem.smslogs as ss join goip.sends as gs on gs.id=ss.goip_id_sms ")
                     .append("where datediff(now(),ss.time_entry)<2 and gs.time>=ss.time_entry and gs.over=0 or gs.sms_no<0)").toString();
             try{
-                DBconnectNEW.executeQuery(findNotSentSms);
+                DBconnectVPS.executeQuery(findNotSentSms);
             } catch (Exception e){
                 System.out.println(LogsT.printDate() + "Error update simcardsStatistics Set report=1 // non sent");
                 e.printStackTrace();
@@ -66,7 +66,7 @@ public class SimcardReportStatistic {
                     .append("(select ss.id from smssystem.smslogs as ss join goip.sends as gs on gs.id=ss.goip_id_sms ")
                     .append("where datediff(now(),ss.time_entry)<2 and gs.time>=ss.time_entry and gs.received=0 and gs.sms_no>=0)").toString();
             try{
-                DBconnectNEW.executeQuery(findSentSms);
+                DBconnectVPS.executeQuery(findSentSms);
             } catch (Exception e){
                 System.out.println(LogsT.printDate() + "Error update simcardsStatistics Set report=2 // sent");
                 e.printStackTrace();
@@ -76,7 +76,7 @@ public class SimcardReportStatistic {
                     .append("(select ss.id from smssystem.smslogs as ss join goip.sends as gs on gs.id=ss.goip_id_sms ")
                     .append("where datediff(now(),ss.time_entry)<2 and gs.time>=ss.time_entry and gs.received=1 and gs.sms_no>=0)").toString();
             try{
-                DBconnectNEW.executeQuery(findDeliveredSms);
+                DBconnectVPS.executeQuery(findDeliveredSms);
             } catch (Exception e){
                 System.out.println(LogsT.printDate() + "Error update simcardsStatistics Set report=3 // delivered");
                 e.printStackTrace();
@@ -87,7 +87,7 @@ public class SimcardReportStatistic {
                 countForUpdateStatitic=0;
                 // select works simcards per 24hours:
                 String currentImsis24h = "SELECT imsi FROM smssystem.simcardsStatistics where time>date_sub(now(), INTERVAL 1 DAY) group by imsi";
-                ArrayList<HashMap> result24h = DBconnectNEW.getResultSet(currentImsis24h);
+                ArrayList<HashMap> result24h = DBconnectVPS.getResultSet(currentImsis24h);
                 for (HashMap rs : result24h){
                     long imsi = GetVal.getLong(rs,"imsi");
                     //System.out.println(LogsT.printDate() + "update statistic for imsi "+imsi);
@@ -95,7 +95,7 @@ public class SimcardReportStatistic {
                 }
                 // select works simcards per day:
                 String currentImsisDay = "SELECT imsi FROM smssystem.simcardsStatistics where TO_DAYS(NOW())-TO_DAYS(time)=0 group by imsi";
-                ArrayList<HashMap> resultDay = DBconnectNEW.getResultSet(currentImsisDay);
+                ArrayList<HashMap> resultDay = DBconnectVPS.getResultSet(currentImsisDay);
                 for (HashMap rs : resultDay){
                     long imsi = GetVal.getLong(rs,"imsi");
                     //System.out.println(LogsT.printDate() + "update statistic for imsi "+imsi);
@@ -103,7 +103,7 @@ public class SimcardReportStatistic {
                 }
                 // select works simcards per 1hours:
                 String currentImsis1h = "SELECT imsi FROM smssystem.simcardsStatistics where time>date_sub(now(), INTERVAL 1 HOUR) group by imsi";
-                ArrayList<HashMap> result1h = DBconnectNEW.getResultSet(currentImsis1h);
+                ArrayList<HashMap> result1h = DBconnectVPS.getResultSet(currentImsis1h);
                 for (HashMap rs : result1h){
                     long imsi = GetVal.getLong(rs,"imsi");
                     //System.out.println(LogsT.printDate() + "update statistic for imsi "+imsi);
@@ -112,13 +112,13 @@ public class SimcardReportStatistic {
                 // select and update works simcards in 00:00
                 String steSelectDiffSec0000="select UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP((select time_entry from smssystem.smslogs where status='WAIT time period' order by id desc limit 1)) as sec";
                 try{
-                    ArrayList<HashMap> res = DBconnectNEW.getResultSet(steSelectDiffSec0000);
+                    ArrayList<HashMap> res = DBconnectVPS.getResultSet(steSelectDiffSec0000);
                     int resSec=GetVal.getInt(res.get(0), "sec");
                     System.out.println(LogsT.printDate() + "resSec="+resSec+" //sec between 00:00 and now(). Need <60");
                     if (resSec<310){
                         String strUpdateReportsDay="update smssystem.simcards as ssim Set ssim.report_unknown_day=0, ssim.report_sent_day=0, ssim.report_d_day=0";
                         try{
-                            DBconnectNEW.executeQuery(strUpdateReportsDay);
+                            DBconnectVPS.executeQuery(strUpdateReportsDay);
                             System.out.println(LogsT.printDate() + "DONE update all simcards report_unknown_day=0, report_sent_day=0, report_d_day=0");
                         } catch (Exception e){
                             System.out.println(LogsT.printDate() + "FAIL update all simcards report_unknown_day=0, report_sent_day=0, report_d_day=0");
@@ -135,7 +135,7 @@ public class SimcardReportStatistic {
                         .append("report_unknown_day='0', report_sent_day='0', report_d_day='0' where imsi in (SELECT preSelect.imsi from (")
                         .append("SELECT ss.imsi FROM smssystem.simcards as ss left join smssystem.simcardsStatistics as sss on ss.imsi=sss.imsi and sss.time>date_sub(now(), INTERVAL 1 DAY) ")
                         .append("where sss.imsi is null) as preSelect)").toString();
-                DBconnectNEW.executeQuery(updateNonWorkImsis);
+                DBconnectVPS.executeQuery(updateNonWorkImsis);
                 System.out.println(LogsT.printDate() + "|Daemons.SimcardReportStatistic| refresh data undeliv/send/deliv for simcard Done!");
             }
             countForUpdateStatitic+=1;
@@ -150,7 +150,7 @@ public class SimcardReportStatistic {
         int qntDelivered=0;
         String dataStatImsiPerHour = new StringBuilder(400).append("SELECT report, count(report) as qnt FROM smssystem.simcardsStatistics where time>date_sub(now(), INTERVAL 1 HOUR) and imsi='")
                 .append(imsi).append("' group by report").toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(dataStatImsiPerHour);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(dataStatImsiPerHour);
         for (HashMap rs : result){
             int report = GetVal.getInt(rs,"report");
             int qnt = toIntExact(GetVal.getLong(rs, "qnt"));
@@ -183,7 +183,7 @@ public class SimcardReportStatistic {
         int qntDelivered=0;
         String dataStatImsiPer24h = new StringBuilder(400).append("SELECT report, count(report) as qnt FROM smssystem.simcardsStatistics where TO_DAYS(NOW())-TO_DAYS(time)=0 and imsi='")
                 .append(imsi).append("' group by report").toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(dataStatImsiPer24h);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(dataStatImsiPer24h);
         for (HashMap rs : result){
             int report = GetVal.getInt(rs, "report");
             int qnt = toIntExact(GetVal.getLong(rs, "qnt"));
@@ -216,7 +216,7 @@ public class SimcardReportStatistic {
         int qntDelivered=0;
         String dataStatImsiPer24h = new StringBuilder(400).append("SELECT report, count(report) as qnt FROM smssystem.simcardsStatistics where time>date_sub(now(), INTERVAL 1 DAY) and imsi='")
                 .append(imsi).append("' group by report").toString();
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(dataStatImsiPer24h);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(dataStatImsiPer24h);
         for (HashMap rs : result){
             int report = GetVal.getInt(rs, "report");
             int qnt = toIntExact(GetVal.getLong(rs, "qnt"));
@@ -249,7 +249,7 @@ public class SimcardReportStatistic {
                 .append(qntNonSent).append("', report_sent_hour='").append(qntSent).append("', report_d_hour='")
                 .append(qntDelivered).append("' where imsi='").append(imsi).append("'").toString();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
             System.out.println(LogsT.printDate() + "DONE updateSimcardsPerHour(imsi "+imsi+")");
         } catch (Exception e){
             System.out.println(LogsT.printDate() + "FAIL updateSimcardsPerHour() update:"+update);
@@ -263,7 +263,7 @@ public class SimcardReportStatistic {
                 .append(qntNonSent).append("', report_sent_day='").append(qntSent).append("', report_d_day='")
                 .append(qntDelivered).append("' where imsi='").append(imsi).append("'").toString();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
             System.out.println(LogsT.printDate() + "DONE updateSimcardsPerDay(imsi "+imsi+")");
         } catch (Exception e){
             System.out.println(LogsT.printDate() + "FAIL updateSimcardsPerDay() update:"+update);
@@ -277,7 +277,7 @@ public class SimcardReportStatistic {
                 .append(qntNonSent).append("', report_sent_24='").append(qntSent).append("', report_d_24='")
                 .append(qntDelivered).append("' where imsi='").append(imsi).append("'").toString();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
             System.out.println(LogsT.printDate() + "DONE updateSimcardsPer24h(imsi "+imsi+")");
         } catch (Exception e){
             System.out.println(LogsT.printDate() + "FAIL updateSimcardsPer24h() update:"+update);
@@ -291,56 +291,56 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerDay start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_unknown_day='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsNotSentPer24h(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerDay start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_unknown_24='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsSentPerHour(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerHour start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_sent_hour='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsSentPerDay(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerDay start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_sent_day='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsSentPer24h(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerDay start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_sent_24='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsDeliveredPerHour(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerHour start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_d_hour='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsDeliveredPerDay(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerDay start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_d_day='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 
     private static void updateSimcardsDeliveredPer24h(int value) throws SQLException {
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerDay start. value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_d_24='")
                 .append(value).append("'").toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
     }
 //////////////////////////////////
 //// изменения значения для определенного imsi. Ранее использовал
@@ -348,7 +348,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerHour start. Prefix:"+prefix+"; value:"+value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_unknown_hour='")
             .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerHour end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -356,7 +356,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerDay start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_unknown_day='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerDay end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -364,7 +364,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerDay start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_unknown_24='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsNotSentPerDay end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -372,7 +372,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerHour start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_sent_hour='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerHour end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -380,7 +380,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerDay start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_sent_day='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerDay end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -388,7 +388,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerDay start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_sent_24='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsSentPerDay end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -396,7 +396,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerHour start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_d_hour='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerHour end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -404,7 +404,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerDay start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_d_day='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerDay end. IMSI:" + imsi + "; value:" + value);
     }
 
@@ -412,7 +412,7 @@ public class SimcardReportStatistic {
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerDay start. Prefix:" + prefix + "; value:" + value);
         String update = new StringBuilder(300).append("update smssystem.simcards Set report_d_24='")
                 .append(value).append("' where imsi=").append(imsi).toString();
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
         //System.out.println(LogsT.printDate() + "updateSimcardsDeliveredPerDay end. IMSI:" + imsi + "; value:" + value);
     }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -420,7 +420,7 @@ public class SimcardReportStatistic {
     private static void resetStatisticPerHour(long imsi) throws SQLException {
         String update = new StringBuilder().append("update smssystem.simcards Set report_unknown_hour='0', report_sent_hour='0', report_d_hour='0' where imsi=").append(imsi).toString();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         } catch (Exception e){
             System.out.println(LogsT.printDate() + LogsId.idImsi(imsi)+"Error resetStatisticPerHour()");
             e.printStackTrace();
@@ -431,7 +431,7 @@ public class SimcardReportStatistic {
     private static void resetStatisticPerDay(long imsi) throws SQLException {
         String update = new StringBuilder().append("update smssystem.simcards Set report_unknown_day='0', report_sent_day='0', report_d_day='0' where imsi=").append(imsi).toString();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         } catch (Exception e){
             System.out.println(LogsT.printDate() + LogsId.idImsi(imsi)+"Error resetStatisticPerDay()");
             e.printStackTrace();
@@ -442,7 +442,7 @@ public class SimcardReportStatistic {
     private static void resetStatisticPer24h(long imsi) throws SQLException {
         String update = new StringBuilder().append("update smssystem.simcards Set report_unknown_24='0', report_sent_24='0', report_d_24='0' where imsi=").append(imsi).toString();
         try{
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         } catch (Exception e){
             System.out.println(LogsT.printDate() + LogsId.idImsi(imsi)+"Error resetStatisticPer24h()");
             e.printStackTrace();

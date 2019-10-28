@@ -1,6 +1,6 @@
 package BeforeSend;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
 import sms.Sms;
@@ -212,7 +212,7 @@ public class CheckSymbolsSms {
                 .append(part).append(" part\", ss.status='REJECTED' where ss.uniqid=")
                 .append(uniqid).toString();
         System.out.println(LogsT.printDate() + LogsId.id(logId) + "incorrectPartsKirillicMessage str: " + update);
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
 //        DBconnectUpdate dbu = new DBconnectUpdate();
 //        dbu.getStmt().execute(update);
         //dbu.closeConnection();
@@ -228,7 +228,7 @@ public class CheckSymbolsSms {
                 .append(part).append(" part\", ss.status='REJECTED' where ss.uniqid=")
                 .append(uniqid).toString();
         System.out.println(LogsT.printDate() + LogsId.id(logId) + "|incorrectPartsLatinMessage| uniqid:"+uniqid+" str:"+update);
-        DBconnectNEW.executeQuery(update);
+        DBconnectVPS.executeQuery(update);
 //        DBconnectUpdate dbu = new DBconnectUpdate();
 //        dbu.getStmt().execute(update);
         //dbu.closeConnection();
@@ -239,7 +239,7 @@ public class CheckSymbolsSms {
         System.out.println(LogsT.printDate() + LogsId.id(logId) + "|checkRejectInOtherPartCompossiteMsg| uniqid:"+uniqid);
         String query = new StringBuilder(400).append("select * from smssystem.smslogs where status='REJECTED' and uniqid=").append(uniqid).toString();
         //DBconnectSelect db = new DBconnectSelect(query);
-        int qntRows = DBconnectNEW.qntRowsInSelect(query);
+        int qntRows = DBconnectVPS.qntRowsInSelect(query);
         //if (db.qntRowsInSelect(db.getRs())>0){
         if (qntRows>0){
             System.out.println(LogsT.printDate() + LogsId.id(logId) + "some parts in composite msg is regected! Return false");

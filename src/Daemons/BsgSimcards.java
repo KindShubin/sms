@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -37,10 +37,10 @@ public class BsgSimcards {
     private static void orderService() throws SQLException, InterruptedException {
         while (true) {
             String query = "select ss.imsi, gg.name, ss.corp, ss.count_permonth from smssystem.simcards as ss join goip.goip as gg on ss.imsi=gg.imsi where ss.corp in ('L9bsgStream','L9bsg') and ss.count_permonth<1";
-            int qnt = DBconnectNEW.qntRowsInSelect(query);
+            int qnt = DBconnectVPS.qntRowsInSelect(query);
             System.out.printf(LogsT.printDate() + "orderService() run. qnt %s" , qnt);
             if (qnt>0){
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
                 for (HashMap rs : result){
                     long imsi = 0L;
                     String corp="";

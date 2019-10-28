@@ -1,6 +1,6 @@
 package GoipProvider;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -55,8 +55,8 @@ public class OurProvider {
         System.out.println(LogsT.printDate() + LogsId.id(logId) + "query: "+query);
         //this.db = new DBconnectSelect(query);
         //this.rs = db.getRs();
-        int qntRows = DBconnectNEW.qntRowsInSelect(query);
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+        int qntRows = DBconnectVPS.qntRowsInSelect(query);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
         writeData(result);
         //this.rs.beforeFirst();
         if(qntRows<1){

@@ -1,6 +1,6 @@
 package Pool;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 
 import java.sql.SQLException;
@@ -65,7 +65,7 @@ public class Pool {
     public Pool(String corp) throws SQLException {
         this.corp=corp;
         String query = new StringBuilder(200).append("select * from smssystem.pools where corp = '").append(corp).append("'").toString();
-        AbstractList<HashMap> result = DBconnectNEW.getResultSet(query);
+        AbstractList<HashMap> result = DBconnectVPS.getResultSet(query);
         for (HashMap rs : result){
             this.description=GetVal.getStr(rs, "description");
             this.tarif=GetVal.getStr(rs, "tarif");

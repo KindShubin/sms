@@ -1,6 +1,6 @@
 package Assignments;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.DBconnectUpdate;
 import DB.GetVal;
 import LogsParts.LogsId;
@@ -46,9 +46,9 @@ public class ChoseProviders {
 
     public void choseProvider_id(long sms_id) throws SQLException {
         String query = new StringBuilder().append(PART_OF_QUERY_ASSIGNMENTS).append(client_id).toString();
-        int qntColumns = DBconnectNEW.qntRowsInSelect(query);
+        int qntColumns = DBconnectVPS.qntRowsInSelect(query);
         System.out.println(LogsT.printDate() + LogsId.id(sms_id) + "choseProvider_id() || qntColumns:" + qntColumns);
-        ArrayList<HashMap> resultQuery = DBconnectNEW.getResultSet(query);
+        ArrayList<HashMap> resultQuery = DBconnectVPS.getResultSet(query);
         System.out.println(LogsT.printDate() + LogsId.id(sms_id) + "resultQuery:");
         System.out.println(LogsT.printDate() + LogsId.id(sms_id) + resultQuery);
         result = new ArrayList<ArrayList<String>>();  // List of list, one per row

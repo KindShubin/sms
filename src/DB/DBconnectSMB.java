@@ -3,9 +3,11 @@ package DB;
 import LogsParts.LogsT;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Properties;
 
-public class DBconnectNEW {
+public class DBconnectSMB {
 
     // JDBC URL, username and password of MySQL server
 //    private static final String url = "jdbc:mysql://10.22.0.1:3306/smssystem";
@@ -13,9 +15,9 @@ public class DBconnectNEW {
 //    private static final String password = "FEwuV32u6una";
 
 // logicPower
-    private static final String url = "jdbc:mysql://localhost:3306/smssystem?zeroDateTimeBehavior=convertToNull";
-    private static final String user = "root";
-    private static final String password = "i9D4L3rbHsY3";
+    private static final String url = "jdbc:mysql://10.55.0.2:3306/scheduler?zeroDateTimeBehavior=convertToNull";
+    private static final String user = "mysql";
+    private static final String password = "cvOHBdjBPi";
 
 
     private static Properties p;
@@ -24,7 +26,7 @@ public class DBconnectNEW {
 //    protected static Statement stmt;
 //    protected static ResultSet rs;
 
-    public DBconnectNEW() throws SQLException {
+    public DBconnectSMB() throws SQLException {
         try {
 
 //            p=new Properties();

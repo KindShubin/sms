@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -62,7 +62,7 @@ public class Resend {
                 "and time(now()) between time_range_start and time_range_end \n" +
                 "and (ss.time_entry < NOW() - INTERVAL cl.resend_undeliv MINUTE) and (ss.time_entry > NOW() - INTERVAL cl.ability_to_send MINUTE) and ((NOW()<ss.time_end) or ss.time_end is null) and (ss.time_send < NOW()- INTERVAL 30 MINUTE) \n" +
                 "and (ss.time_entry>NOW() - INTERVAL 14 DAY)";//последнее условие для того чтобы не было поиска по всей базе а ограничивалосб 2мя неделями
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "Resend.resendGuaranteedSend() Not available sms for resend");
         } else System.out.println(LogsT.printDate() + "Resend.resendGuaranteedSend() available "+ result.size() + "sms for resend!");
@@ -81,7 +81,7 @@ public class Resend {
             String description = new StringBuilder(300).append("resend sms. was imsi:").append(imsi).append(", attemps: ").append(attemps).toString();
             String update = new StringBuilder().append("update smssystem.smslogs Set status='WAIT', availability='Y', goip_id_sms=NULL, description='")
                     .append(description).append("', userfield='status was ").append(status).append("' where id=").append(id).toString();
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         }
 
     }
@@ -96,7 +96,7 @@ public class Resend {
                 "and time(now()) between time_range_start and time_range_end \n" +
                 "and (ss.time_entry < NOW() - INTERVAL cl.resend_sent MINUTE) and (ss.time_entry > NOW() - INTERVAL cl.ability_to_send MINUTE) and ((NOW()<ss.time_end) or ss.time_end is null) and (ss.time_send < NOW()- INTERVAL 30 MINUTE) \n" +
                 "and (ss.time_entry>NOW() - INTERVAL 14 DAY)";//последнее условие для того чтобы не было поиска по всей базе а ограничивалосб 2мя неделями
-        ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+        ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "Resend.resendGuaranteedDelivered() Not available sms for resend");
         } else System.out.println(LogsT.printDate() + "Resend.resendGuaranteedDelivered() available "+ result.size() + "sms for resend!");
@@ -115,7 +115,7 @@ public class Resend {
             String description = new StringBuilder(300).append("resend sms. was imsi:").append(imsi).append(", attemps: ").append(attemps).toString();
             String update = new StringBuilder().append("update smssystem.smslogs Set status='WAIT', availability='Y', goip_id_sms=NULL, description='")
                     .append(description).append("', userfield='status was ").append(status).append("' where id=").append(id).toString();
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         }
     }
 
@@ -125,7 +125,7 @@ public class Resend {
         query = "select ss.id, ss.status, ssi.imsi, ssi.attemps, ss.client_id, ss.time_entry, ss.time_end, NOW() as now from smssystem.smslogs as ss \n" +
                 "left join smssystem.simcardsStatistics as ssi on ssi.idSMS=ss.id \n" +
                 "where ss.status in ('WAIT', 'sending', 'processing') and ss.time_end<now() and ss.time_end is not null and (ss.time_entry>NOW() - INTERVAL 14 DAY)";
-        result = DBconnectNEW.getResultSet(query);
+        result = DBconnectVPS.getResultSet(query);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "Resend.expiredStatus() /now()>time_end/ Not available sms for expired status");
         } else System.out.println(LogsT.printDate() + "Resend.expiredStatus() /now()>time_end/ available "+ result.size() + "sms for change status to expired!");
@@ -142,14 +142,14 @@ public class Resend {
             System.out.println(LogsT.printDate() + LogsId.id(id)+"Resend.expiredStatus() "+description);
             String update = new StringBuilder().append("update smssystem.smslogs Set status='EXPIRED', description='")
                     .append(description).append("', userfield='status was ").append(status).append("' where id=").append(id).toString();
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         }
         //
         query = "select ss.id, ss.status, ssi.imsi, ssi.attemps, ss.client_id, cl.resend_undeliv, ss.time_entry, ss.time_end, NOW() as now from smssystem.smslogs as ss \n" +
                 "left join smssystem.simcardsStatistics as ssi on ssi.idSMS=ss.id \n" +
                 "join smssystem.clients as cl on cl.id=ss.client_id \n" +
                 "where cl.type in (2, 3) and ss.status in ('UNDELIVERABLE', 'sending', 'processing') and (ss.time_entry < NOW() - INTERVAL cl.ability_to_send MINUTE) and (ss.time_entry>NOW()-INTERVAL 14 DAY)";
-        result = DBconnectNEW.getResultSet(query);
+        result = DBconnectVPS.getResultSet(query);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "Resend.expiredStatus() /client_type 2-3 not send/ Not available sms for expired status");
         } else System.out.println(LogsT.printDate() + "Resend.expiredStatus() /client_type 2-3 not send/ available "+ result.size() + "sms for change status to expired!");
@@ -167,14 +167,14 @@ public class Resend {
             System.out.println(LogsT.printDate() + LogsId.id(id)+"Resend.expiredStatus() "+description);
             String update = new StringBuilder().append("update smssystem.smslogs Set status='EXPIRED', description='")
                     .append(description).append("', userfield='status was ").append(status).append("' where id=").append(id).toString();
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         }
         //
         query = "select ss.id, ss.status, ssi.imsi, ssi.attemps, ss.client_id, cl.resend_sent, ss.time_entry, ss.time_end, NOW() as now from smssystem.smslogs as ss \n" +
                 "left join smssystem.simcardsStatistics as ssi on ssi.idSMS=ss.id \n" +
                 "join smssystem.clients as cl on cl.id=ss.client_id \n" +
                 "where cl.type in (4, 5) and ss.status in ('UNDELIVERABLE', 'SEND', 'sending', 'processing') and (ss.time_entry < NOW() - INTERVAL cl.ability_to_send MINUTE) and (ss.time_entry>NOW()-INTERVAL 14 DAY)";
-        result = DBconnectNEW.getResultSet(query);
+        result = DBconnectVPS.getResultSet(query);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "Resend.expiredStatus() /client_type 4-5 not delivered/ Not available sms for expired status");
         } else System.out.println(LogsT.printDate() + "Resend.expiredStatus() /client_type 4-5 not delivered/ available "+ result.size() + "sms for change status to expired!");
@@ -192,7 +192,7 @@ public class Resend {
             System.out.println(LogsT.printDate() + LogsId.id(id)+"Resend.expiredStatus() "+description);
             String update = new StringBuilder().append("update smssystem.smslogs Set status='EXPIRED', description='")
                     .append(description).append("', userfield='status was ").append(status).append("' where id=").append(id).toString();
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
         }
     }
 }

@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -38,15 +38,15 @@ public class CheckTimePeriod {
         while (true) {
         //while (i<2) {
             String queryWaitTP = "select * from smssystem.smslogs as ss where ss.availability = 'N' and ss.status = 'ACCEPTED' and ss.total=1 and (ss.userfield <> 'update id' or ss.userfield is null) and ((now() between ss.time_begin and ss.time_end) or (ss.time_begin is null and ss.time_end is null) or (ss.time_begin is null and now() < ss.time_end) or (ss.time_end is null and now() > ss.time_begin))";
-            if (DBconnectNEW.qntRowsInSelect(queryWaitTP)>0){
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(queryWaitTP);
+            if (DBconnectVPS.qntRowsInSelect(queryWaitTP)>0){
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(queryWaitTP);
                 for (HashMap rs : result){
                     try{
                         long id = GetVal.getLong(rs, "id");
                         System.out.println(LogsT.printDate() + "SMS with id:"+id+"is may be available");
                         String update = new StringBuilder(200).append("update smssystem.smslogs as ss SET ss.availability='Y', ss.status = 'WAIT' WHERE ss.id=").append(id).toString();
                         System.out.println(LogsT.printDate() + update);
-                        DBconnectNEW.executeQuery(update);
+                        DBconnectVPS.executeQuery(update);
                         System.out.println(LogsT.printDate() + "id:"+id+" now is available and status WAIT");
                     } catch (Exception e) {
                         System.out.println(LogsT.printDate() + "что-то не так с блоком смены статуса смс с ACCEPTED на WAIT");

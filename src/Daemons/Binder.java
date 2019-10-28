@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsId;
 import LogsParts.LogsT;
@@ -40,9 +40,9 @@ public class Binder {
             String query = "select ss.uniqid from smssystem.smslogs as ss left join smssystem.clients as sc on sc.id=ss.client_id where total>1 and status='ENROUTE' and datediff(now(),time_entry)<2 group by ss.uniqid, sc.prioritet order by sc.prioritet asc, ss.uniqid asc limit 10";
 //            DBconnectSelect db = new DBconnectSelect(query);
 //            ResultSet rs = db.getRs();
-            int qntResults=DBconnectNEW.qntRowsInSelect(query);
+            int qntResults= DBconnectVPS.qntRowsInSelect(query);
             if (qntResults>0){
-                ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+                ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
                 //rs.first();
                 int i=0;
                 while (i<qntResults) {
@@ -80,7 +80,7 @@ public class Binder {
         System.out.println(LogsT.printDate() + LogsId.id(uniqid) + "|Daemons.Binder.setStatusBonding()| begin update sms status to bonding for uniqid="+uniqid);
         String update = new StringBuilder().append("update smssystem.smslogs Set availability='N', status = 'bonding' WHERE total>1 and datediff(now(),time_entry)<2 and uniqid=").append(uniqid).toString();
         try {
-            DBconnectNEW.executeQuery(update);
+            DBconnectVPS.executeQuery(update);
             System.out.println(LogsT.printDate() + LogsId.id(uniqid) + "|Daemons.Binder.setStatusBonding()| was set status bonding for uniqid=" + uniqid+", res=true");
             res=true;
         } catch (SQLException e) {

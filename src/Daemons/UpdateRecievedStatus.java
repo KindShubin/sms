@@ -1,6 +1,6 @@
 package Daemons;
 
-import DB.DBconnectNEW;
+import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
 
@@ -45,7 +45,7 @@ public class UpdateRecievedStatus {
             System.out.println("block SEND --> DELIVERED");
             String query_send = "select ss.id, ss.uniqid, ss.qntsms, gs.sms_no, gs.received from goip.sends as gs join smssystem.smslogs as ss on ss.goip_id_sms=gs.id " +
                     "where ss.availability = 'Y' and ss.status ='SEND' and time_entry > NOW() - INTERVAL 2 DAY";
-            ArrayList<HashMap> result_send = DBconnectNEW.getResultSet(query_send);
+            ArrayList<HashMap> result_send = DBconnectVPS.getResultSet(query_send);
             for (HashMap rs : result_send) {
                 long id = ID_DEFAULT;
                 long uniqid = UNIQID_DEFAULT;
@@ -60,15 +60,15 @@ public class UpdateRecievedStatus {
                 if(received > 0) {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='DELIVERED', time_delivered=NOW() where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='DELIVERED', time_delivered=NOW() where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
             }
             //block UNDELIVERABLE --> SEND/DELIVERED
             System.out.println("block UNDELIVERABLE --> SEND/DELIVERED");
             String query_undel = "select ss.id, ss.uniqid, ss.qntsms, gs.sms_no, gs.received from goip.sends as gs join smssystem.smslogs as ss on ss.goip_id_sms=gs.id " +
                     "where ss.availability = 'Y' and ss.status = 'UNDELIVERABLE' and time_entry > NOW() - INTERVAL 2 DAY";
-            ArrayList<HashMap> result_undel = DBconnectNEW.getResultSet(query_undel);
+            ArrayList<HashMap> result_undel = DBconnectVPS.getResultSet(query_undel);
             for (HashMap rs : result_undel) {
                 long id = ID_DEFAULT;
                 long uniqid = UNIQID_DEFAULT;
@@ -83,21 +83,21 @@ public class UpdateRecievedStatus {
                 if (sms_no >= 0 && received == 0) {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='SEND' where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='SEND' where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
                 if(received > 0) {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='DELIVERED', time_delivered=NOW() where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='DELIVERED', time_delivered=NOW() where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
             }
             // block 'sending','WAIT','UNKNOWN' --> ...
             System.out.println("block 'sending','WAIT','UNKNOWN' --> ...");
             String query = "select ss.id, ss.uniqid, ss.qntsms, gs.sms_no, gs.received from goip.sends as gs join smssystem.smslogs as ss on ss.goip_id_sms=gs.id " +
                     "where ss.availability = 'Y' and ss.status in('sending','WAIT','UNKNOWN') and time_entry > NOW() - INTERVAL 2 DAY";
-            ArrayList<HashMap> result = DBconnectNEW.getResultSet(query);
+            ArrayList<HashMap> result = DBconnectVPS.getResultSet(query);
             for (HashMap rs : result) {
                 long id = ID_DEFAULT;
                 long uniqid = UNIQID_DEFAULT;
@@ -112,26 +112,26 @@ public class UpdateRecievedStatus {
                 if (sms_no >= 0 && received == 0) {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='SEND' where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='SEND' where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
                 else if(received > 0) {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='DELIVERED', time_delivered=NOW() where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='DELIVERED', time_delivered=NOW() where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
                 else if(sms_no < 0) {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='UNDELIVERABLE' where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='UNDELIVERABLE' where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
                 else {
                     String statusSend = new StringBuilder().append("update smssystem.smslogs SET status='UNKNOWN' where id=").append(id).toString();
                     String statusSendUniqid = new StringBuilder().append("update smssystem.smslogs SET status='UNKNOWN' where uniqid=").append(uniqid).toString();
-                    if (qntsms>1) DBconnectNEW.executeQuery(statusSendUniqid);
-                    else DBconnectNEW.executeQuery(statusSend);
+                    if (qntsms>1) DBconnectVPS.executeQuery(statusSendUniqid);
+                    else DBconnectVPS.executeQuery(statusSend);
                 }
             }
             //finalReportsToBsg();
