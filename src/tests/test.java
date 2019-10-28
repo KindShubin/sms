@@ -1,9 +1,13 @@
 package tests;
 
+import DB.DBconnectSMB;
+import DB.DBconnectVPS;
 import LogsParts.LogsT;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,10 +15,11 @@ public class test {
     //DBconnectSelect dBconnectSelect;
 
     public static void main(String args[]) throws SQLException, IOException {
-        String s = "proverka";
-        int a = 0;
-        System.out.println("a: "+method(a));
-        getPrefixForSim();
+        testDBsmb();
+        //String s = "proverka";
+        //int a = 0;
+        //System.out.println("a: "+method(a));
+        //getPrefixForSim();
     }
 
     public static String method(int a) {
@@ -24,36 +29,17 @@ public class test {
             default:
                 return String.valueOf(a);
         }
+    }
 
-//        int i = 10;
-//        System.out.printf("string s is %s, int i is %d", s, i);
-//        String query_client = "SELECT * FROM smssystem.clients as sc where sc.id=2";
-//        String query_provider = "SELECT * FROM smssystem.providers as sp where sp.id=3";
-//        DBconnectSelect dBconnectSelectClient = null;
-//        try {
-//            dBconnectSelectClient = new DBconnectSelect(query_client);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        } finally {
-//            System.out.println("dBconnectSelect for client is created");
-//        }
-//        DBconnectSelect dBconnectSelectProv = null;
-//        try {
-//            dBconnectSelectProv = new DBconnectSelect(query_provider);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        } finally {
-//            System.out.println("dBconnectSelect for provider is created");
-//        }
-//        Client client = new Client(dBconnectSelectClient.makeRS());
-//        //client.printClient();
-//        Provider provider = new Provider(dBconnectSelectProv.makeRS());
-//        provider.printProvider();
-//
-//        Client client1 = new Client(2);
-//        //client1.printClient();
-//        Provider provider1 = new Provider(3);
-//        provider1.printProvider();
+    public static void testDBsmb() throws SQLException {
+        String query_scheduler = "SELECT * FROM scheduler.sim limit 10";
+        ArrayList<HashMap> result_scheduler = DBconnectSMB.getResultSet(query_scheduler);
+        System.out.println("result scheduler:");
+        System.out.println(result_scheduler.toString());
+        String query_goip = "SELECT * FROM goip.goip limit 10";
+        ArrayList<HashMap> result_goip = DBconnectSMB.getResultSet(query_goip);
+        System.out.println("result goip:");
+        System.out.println(result_goip.toString());
     }
 
     private static void getPrefixForSim() throws IOException {
