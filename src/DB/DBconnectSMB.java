@@ -261,6 +261,11 @@ public static Exception executeQuery(String query) throws SQLException {
             //p.setProperty("characterEncoding","cp1251");
         p.setProperty("characterEncoding","utf-8");
         p.setProperty("useSSL","false");
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void setPropertiesLite(){
@@ -268,5 +273,10 @@ public static Exception executeQuery(String query) throws SQLException {
         p.setProperty("user",user);
         p.setProperty("password",password);
         p.setProperty("useSSL","false");
+        try{
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
