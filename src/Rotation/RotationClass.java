@@ -1,5 +1,6 @@
 package Rotation;
 
+import DB.DBconnectSMB;
 import DB.DBconnectVPS;
 import DB.GetVal;
 import LogsParts.LogsT;
@@ -16,17 +17,22 @@ public class RotationClass {
     }
 
 
-    static public void rotation() {
+    static public void rotation() throws SQLException {
         ArrayList<HashMap> dataSmssystemLines = dataSmssystemLines();
         ArrayList<HashMap> dataSmssystemSim = dataSmssystemSim();
         ArrayList<HashMap> dataSmssystemPools = dataSmssystemPools();
         ArrayList<HashMap> dataSmssystemRotation = dataSmssystemRotation();
+        ArrayList<HashMap> dataSmssystemRotationGoips = dataSmssystemRotationGoips();
+        ArrayList<Integer> allFreePorts = getAllFreePorts();
 
         // test
         System.out.printf("dataSmssystemLines:\n"+dataSmssystemLines);
         System.out.printf("dataSmssystemSim:\n"+dataSmssystemSim);
         System.out.printf("dataSmssystemPools:\n"+dataSmssystemPools);
         System.out.printf("dataSmssystemRotation:\n"+dataSmssystemRotation);
+        System.out.printf("dataSmssystemRotationGoips:\n"+dataSmssystemRotationGoips);
+        System.out.printf("\n");
+        System.out.printf("allFreePorts:\n"+allFreePorts.toString());
         //System.out.printf(":\n"+);
 
     }
@@ -64,6 +70,19 @@ public class RotationClass {
         return data;
     }
 
+    static private ArrayList<HashMap> dataSmssystemRotationGoips(){
+        ArrayList<HashMap> data = new ArrayList<>();
+        String select = new StringBuilder("SELECT id, goip, ip, zone FROM smssystem.rotation_goips;").toString();
+        try {
+            data = DBconnectVPS.getResultSet(select);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+
+
     static private ArrayList<HashMap> dataSmssystemRotation(){
         ArrayList<HashMap> data = new ArrayList<>();
         String select = new StringBuilder("SELECT id, poolSim, quantity_sim, quantity_ports, prioritet, perc_of_all_ports, include_zone, exclude_zone, include_gates, exclude_gates, description, poolPorts FROM smssystem.rotation;").toString();
@@ -84,7 +103,7 @@ public class RotationClass {
                 .append("where gg.name regexp '").append(strRegexpGoips).append("' and gg.gsm_status='LOGOUT' and (ss.line_name is NULL or ss1.plan_line_name is NULL);")
                 .toString();
         //System.out.println(LogsT.printDate() + );
-        ArrayList<HashMap> result = DBconnectVPS.getResultSet(select);
+        ArrayList<HashMap> result = DBconnectSMB.getResultSet(select);
         if (result.size()==0){
             System.out.println(LogsT.printDate() + "|RotationClass.getAllFreePorts| result 0");
         } else System.out.println(LogsT.printDate() + "|RotationClass.getAllFreePorts| qnt ports: "+ result.size());
@@ -104,7 +123,7 @@ public class RotationClass {
     }
 
     static private ArrayList<Integer> getGoipsForRotation() throws SQLException {
-        String select="SELECT goip FROM rotation.goips";
+        String select="SELECT goip FROM smssystem.rotation_goips";
         ArrayList<HashMap> result = DBconnectVPS.getResultSet(select);
         ArrayList<Integer> goips = new ArrayList<Integer>();
         for (HashMap rs: result) {
