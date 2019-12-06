@@ -26,13 +26,13 @@ public class RotationClass {
         ArrayList<Integer> allFreePorts = getAllFreePorts();
 
         // test
-        System.out.printf("dataSmssystemLines:\n"+dataSmssystemLines);
-        System.out.printf("dataSmssystemSim:\n"+dataSmssystemSim);
-        System.out.printf("dataSmssystemPools:\n"+dataSmssystemPools);
-        System.out.printf("dataSmssystemRotation:\n"+dataSmssystemRotation);
-        System.out.printf("dataSmssystemRotationGoips:\n"+dataSmssystemRotationGoips);
+        System.out.printf("dataSmssystemLines: %s\n", dataSmssystemLines);
+        System.out.printf("dataSmssystemSim: %s\n", dataSmssystemSim);
+        System.out.printf("dataSmssystemPools: %s\n", dataSmssystemPools);
+        System.out.printf("dataSmssystemRotation: %s\n", dataSmssystemRotation);
+        System.out.printf("dataSmssystemRotationGoips: %s\n", dataSmssystemRotationGoips);
         System.out.printf("\n");
-        System.out.printf("allFreePorts:\n"+allFreePorts.toString());
+        System.out.printf("allFreePorts: %s\n", allFreePorts.toString());
         //System.out.printf(":\n"+);
 
     }
