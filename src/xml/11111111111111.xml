@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <package>
+        <sms id='1234' uniqid='115' part='1' total='1' dst_num='380633273782'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='116' part='1' total='1' dst_num='380504690929'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='117' part='1' total='1' dst_num='380684690929'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='118' part='1' total='1' dst_num='380634861515'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='119' part='1' total='1' dst_num='380937027011'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='120' part='1' total='1' dst_num='380633273782'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='121' part='1' total='1' dst_num='380639725333'>
+            BSG Test. Какой-то недлинный текст менее 70 символов
+        </sms>
+                <sms id='1234' uniqid='122' part='1' total='1' dst_num='
